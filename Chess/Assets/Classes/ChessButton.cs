@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 using UnityEngine;
-
+using ChessLogic;
 
 namespace Assets.Classes
 {
@@ -14,13 +9,19 @@ namespace Assets.Classes
         public Button button;
         public Image shape;
         public Texture2D cursorShape;
-        public int index;
+        public int tempIndex =0;
+        public ChessPiece piece;
+
+        [UnityEngine.SerializeField]
+        private int m_index;
+        public int index => m_index;
 
         public ChessButton(Button button, int index)
         {
             this.button = button;
-            this.index = index;
+            m_index = index;
             cursorShape = null;
+            piece = new ChessPiece();
         }
     }
 }
