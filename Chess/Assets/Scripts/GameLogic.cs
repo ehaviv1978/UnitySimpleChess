@@ -1,5 +1,6 @@
 ﻿using Assets.Classes;
 using ChessLogic;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,6 +38,7 @@ public class GameLogic : MonoBehaviour
     private List<ChessButton> ChessButtons = new List<ChessButton>();
     private ChessButton HandPiece;
     private ChessGame Game = new ChessGame();
+    private int[] possibleMoves;
 
 
     void Start()
@@ -63,137 +65,150 @@ public class GameLogic : MonoBehaviour
         HandPiece = new ChessButton(chessButtonPrefub, 99);
         HandPiece.Shape = Shape;
         HandPiece.Shape.sprite = Empty;
-
-        foreach (var button in ChessButtons)
+        foreach (var but in ChessButtons)
         {
-            if (button.index / 8 == 1)
+            but.Button.image.color = Color.clear;
+        }
+
+        Game.NewBoard();
+        DrawBoard();
+    }
+
+    void DrawBoard()
+    {
+        for (int i = 0; i < 64; i++)
+        {
+            if (Game.board1d[i].pieceColor == PieceColor.White)
             {
-                button.Piece.Color = PieceColor.Black;
-                button.Piece.Type = PieceType.Pawn;
-                button.Shape.sprite = BlackPawn;
-                button.CursorShape = CursorBlackPawn;
+                switch (Game.board1d[i].pieceType)
+                {
+                    case PieceType.King:
+                        ChessButtons[i].Shape.sprite = WhiteKing;
+                        ChessButtons[i].CursorShape = CursorWhiteKing;
+                        break;
+                    case PieceType.King0:
+                        ChessButtons[i].Shape.sprite = WhiteKing;
+                        ChessButtons[i].CursorShape = CursorWhiteKing;
+                        break;
+                    case PieceType.Bishop:
+                        ChessButtons[i].Shape.sprite = WhiteBishop;
+                        ChessButtons[i].CursorShape = CursorWhiteBishop;
+                        break;
+                    case PieceType.Queen:
+                        ChessButtons[i].Shape.sprite = WhiteQueen;
+                        ChessButtons[i].CursorShape = CursorWhiteQueen;
+                        break;
+                    case PieceType.Pawn:
+                        ChessButtons[i].Shape.sprite = WhitePawn;
+                        ChessButtons[i].CursorShape = CursorWhitePawn;
+                        break;
+                    case PieceType.Rock:
+                        ChessButtons[i].Shape.sprite = WhiteRock;
+                        ChessButtons[i].CursorShape = CursorWhiteRock;
+                        break;
+                    case PieceType.Rock0:
+                        ChessButtons[i].Shape.sprite = WhiteRock;
+                        ChessButtons[i].CursorShape = CursorWhiteRock;
+                        break;
+                    case PieceType.Knight:
+                        ChessButtons[i].Shape.sprite = WhiteKnight;
+                        ChessButtons[i].CursorShape = CursorWhiteKnight;
+                        break;
+                }
             }
-            else if (button.index == 0 || button.index == 7)
+            else if (Game.board1d[i].pieceColor == PieceColor.Black)
             {
-                button.Piece.Color = PieceColor.Black;
-                button.Piece.Type = PieceType.Rock0;
-                button.Shape.sprite = BlackRock;
-                button.CursorShape = CursorBlackRock;
-            }
-            else if (button.index == 1 || button.index == 6)
-            {
-                button.Piece.Color = PieceColor.Black;
-                button.Piece.Type = PieceType.Knight;
-                button.Shape.sprite = BlackKnight;
-                button.CursorShape = CursorBlackKnight;
-            }
-            else if (button.index == 2 || button.index == 5)
-            {
-                button.Piece.Color = PieceColor.Black;
-                button.Piece.Type = PieceType.Bishop;
-                button.Shape.sprite = BlackBishop;
-                button.CursorShape = CursorBlackBishop;
-            }
-            else if (button.index == 3)
-            {
-                button.Piece.Color = PieceColor.Black;
-                button.Piece.Type = PieceType.Queen;
-                button.Shape.sprite = BlackQueen;
-                button.CursorShape = CursorBlackQueen;
-            }
-            else if (button.index == 4)
-            {
-                button.Piece.Color = PieceColor.Black;
-                button.Piece.Type = PieceType.King0;
-                button.Shape.sprite = BlackKing;
-                button.CursorShape = CursorBlackKing;
-            }
-            else if (button.index / 8 == 6)
-            {
-                button.Piece.Color = PieceColor.White;
-                button.Piece.Type = PieceType.Pawn;
-                button.Shape.sprite = WhitePawn;
-                button.CursorShape = CursorWhitePawn;
-            }
-            else if (button.index == 56 || button.index == 63)
-            {
-                button.Piece.Color = PieceColor.White;
-                button.Piece.Type = PieceType.Rock0;
-                button.Shape.sprite = WhiteRock;
-                button.CursorShape = CursorWhiteRock;
-            }
-            else if (button.index == 57 || button.index == 62)
-            {
-                button.Piece.Color = PieceColor.White;
-                button.Piece.Type = PieceType.Knight;
-                button.Shape.sprite = WhiteKnight;
-                button.CursorShape = CursorWhiteKnight;
-            }
-            else if (button.index == 58 || button.index == 61)
-            {
-                button.Piece.Color = PieceColor.White;
-                button.Piece.Type = PieceType.Bishop;
-                button.Shape.sprite = WhiteBishop;
-                button.CursorShape = CursorWhiteBishop;
-            }
-            else if (button.index == 59)
-            {
-                button.Piece.Color = PieceColor.White;
-                button.Piece.Type = PieceType.Queen;
-                button.Shape.sprite = WhiteQueen;
-                button.CursorShape = CursorWhiteQueen;
-            }
-            else if (button.index == 60)
-            {
-                button.Piece.Color = PieceColor.White;
-                button.Piece.Type = PieceType.King0;
-                button.Shape.sprite = WhiteKing;
-                button.CursorShape = CursorWhiteKing;
+                switch (Game.board1d[i].pieceType)
+                {
+                    case PieceType.King:
+                        ChessButtons[i].Shape.sprite = BlackKing;
+                        ChessButtons[i].CursorShape = CursorBlackKing;
+                        break;
+                    case PieceType.King0:
+                        ChessButtons[i].Shape.sprite = BlackKing;
+                        ChessButtons[i].CursorShape = CursorBlackKing;
+                        break;
+                    case PieceType.Bishop:
+                        ChessButtons[i].Shape.sprite = BlackBishop;
+                        ChessButtons[i].CursorShape = CursorBlackBishop;
+                        break;
+                    case PieceType.Queen:
+                        ChessButtons[i].Shape.sprite = BlackQueen;
+                        ChessButtons[i].CursorShape = CursorBlackQueen;
+                        break;
+                    case PieceType.Pawn:
+                        ChessButtons[i].Shape.sprite = BlackPawn;
+                        ChessButtons[i].CursorShape = CursorBlackPawn;
+                        break;
+                    case PieceType.Rock:
+                        ChessButtons[i].Shape.sprite = BlackRock;
+                        ChessButtons[i].CursorShape = CursorBlackRock;
+                        break;
+                    case PieceType.Rock0:
+                        ChessButtons[i].Shape.sprite = BlackRock;
+                        ChessButtons[i].CursorShape = CursorBlackRock;
+                        break;
+                    case PieceType.Knight:
+                        ChessButtons[i].Shape.sprite = BlackKnight;
+                        ChessButtons[i].CursorShape = CursorBlackKnight;
+                        break;
+                }
             }
             else
             {
-                button.Piece.Color = PieceColor.Non;
-                button.Piece.Type = PieceType.Non;
-                button.Shape.sprite = Empty;
-                button.CursorShape = null;
+                ChessButtons[i].Shape.sprite = Empty;
+                ChessButtons[i].CursorShape = null;
             }
         }
     }
-
+    
 
     void ButtonClicked(ChessButton button)
     {
         Debug.Log("Button clicked = " + button.index);
         if (HandPiece.Shape.sprite==Empty)
         {
-            if (button.Shape.sprite == Empty)
+            if (button.Shape.sprite == Empty || Game.board1d[button.index].pieceColor!=Game.turnColor)
             {
                 return;
             }
             else
             {
-                HandPiece.Piece = button.Piece;
-                HandPiece.CursorShape = button.CursorShape;
-                HandPiece.Shape.sprite = button.Shape.sprite;
-                HandPiece.tempIndex = button.index;
+                possibleMoves = Game.possibleMoves(button.index).ToArray();
+                foreach (int index in possibleMoves)
+                {
+                    ChessButtons[index].Button.image.color = Color.gray;
+                }
+                button.Button.image.color = Color.red;
                 Cursor.SetCursor(button.CursorShape, new Vector2(20, 30), CursorMode.ForceSoftware);
-                button.Piece.Type = PieceType.Non;
-                button.Piece.Color = PieceColor.Non;
-                button.CursorShape = null;
+                HandPiece.CursorShape = button.CursorShape;
+                HandPiece.tempIndex = button.index;
+                HandPiece.Shape.sprite = button.Shape.sprite;
                 button.Shape.sprite = Empty;
             }
         }
         else
         {
+            if (button.index == HandPiece.tempIndex)
+            {
+                button.Shape.sprite = HandPiece.Shape.sprite;               
+            }
+            else if (Array.Exists(possibleMoves, element => element == button.index))
+            {
+                Game.makeMove(HandPiece.tempIndex, button.index);
+                DrawBoard();
+            }
+            else
+            {
+                return;
+            }
+            foreach (var but in ChessButtons)
+            {
+                but.Button.image.color = Color.clear;
+            }
             Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
-            button.Piece = HandPiece.Piece;
-            button.CursorShape = HandPiece.CursorShape;
-            button.Shape.sprite = HandPiece.Shape.sprite;
-            HandPiece.Piece.Type = PieceType.Non;
-            HandPiece.Piece.Color = PieceColor.Non;
-            HandPiece.CursorShape = null;
             HandPiece.Shape.sprite = Empty;
-
+            HandPiece.CursorShape = null;
         }
     }
    

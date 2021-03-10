@@ -8,12 +8,12 @@ namespace ChessLogic
 {
     class ChessGame
     {
-        ChessSquare[] board1d = new ChessSquare[64];
+        public ChessSquare[] board1d = new ChessSquare[64];
         ChessSquare[,] board2d = new ChessSquare[8, 8];
 
         List<ChessSquare[]> moveHistory = new List<ChessSquare[]>();
         int moveHistoryPointer = 0;
-        PieceColor turnColor = PieceColor.White;
+        public PieceColor turnColor = PieceColor.White;
         List<int> whitePieces = new List<int>();
         List<int> blackPieces = new List<int>();
 
@@ -23,7 +23,7 @@ namespace ChessLogic
             turnColor = PieceColor.White;
         }
 
-        private void NewBoard()
+        public void NewBoard()
         {
             for (int i = 0; i < 64; i++)
             {
