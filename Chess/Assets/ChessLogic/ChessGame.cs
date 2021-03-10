@@ -258,11 +258,6 @@ namespace ChessLogic
         }
 
 
-        public bool isValidMove(int first, int second)
-        {
-            return true;
-        }
-
         // checks if specific square is under attack
         private bool IsThreatened(int index, PieceColor color)
         {
@@ -373,7 +368,7 @@ namespace ChessLogic
         public bool isDoingCheckmate(PieceColor color)
         {
             var tempHistory = moveHistory.Take(moveHistory.Count).ToList();
-            var pieces = color == PieceColor.Black ? whitePieces : blackPieces;
+            var pieces = (color == PieceColor.Black) ? whitePieces : blackPieces;
 
             foreach (int piece in pieces.Take(pieces.Count).ToArray())
             {
@@ -398,12 +393,12 @@ namespace ChessLogic
         public List<int> possibleMoves(int index)
         {
             var color = board1d[index].pieceColor;
-            var oppositeColor = color == PieceColor.White ? PieceColor.Black : PieceColor.White;
+            var oppositeColor = (color == PieceColor.White) ? PieceColor.Black : PieceColor.White;
             var rowOld = index / 8;
             var columnOld = index % 8;
             var possibleMoves = new List<int>();
 
-            void DiagonalMove()
+            void DiagonalMoveCheck()
             {
                 for (int n = 1; n < 8; n++)
                 {
@@ -499,7 +494,7 @@ namespace ChessLogic
                 }
             }
 
-            void CrossMove()
+            void CrossMoveCheck()
             {
                 for (int n = 1; n < 8; n++)
                 {
@@ -831,352 +826,280 @@ namespace ChessLogic
             //Calculate Rock possible moves
             else if (board1d[index].pieceType == PieceType.Rock || board1d[index].pieceType == PieceType.Rock0)
             {
-                CrossMove();
+                CrossMoveCheck();
             }
 
             //Calculate Bishop Possible moves
             else if (board1d[index].pieceType == PieceType.Bishop)
             {
-                DiagonalMove();
+                DiagonalMoveCheck();
             }
 
             //Calculate Queen Posible moves
             else if (board1d[index].pieceType == PieceType.Queen)
             {
-                CrossMove();
-                DiagonalMove();          
+                CrossMoveCheck();
+                DiagonalMoveCheck();          
             }
 
             return possibleMoves;
         }
-    
 
+
+
+        public bool isValidMove(int first, int second)
+        {
+            if (board1d[first].pieceColor == board1d[second].pieceColor)
+            {
+                return false;
+            }
+
+            var color = board1d[first].pieceColor;
+            var oppositeColor = (color == PieceColor.White) ? PieceColor.Black : PieceColor.White;
+            var rowOld = first / 8;
+            var columnOld = first % 8;
+            var rowNew = second / 8;
+            var columnNew = second % 8;
+            var rowDiff = rowNew - rowOld;
+            var columnDiff = columnNew - columnOld;
+
+            bool CrosslMoveCheck()
+            {
+                if (rowDiff > 1)
+                {
+                    for (int i = 1; i < rowDiff; i++)
+                    {
+                        if (board2d[rowOld + i, columnOld].pieceType != PieceType.Non)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else if (rowDiff < -1)
+                {
+                    for (int i = 1; i < Math.Abs(rowDiff); i++)
+                    {
+                        if (board2d[rowOld - i, columnOld].pieceType != PieceType.Non)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else if (columnDiff < -1)
+                {
+                    for (int i = 1; i < Math.Abs(columnDiff); i++)
+                    {
+                        if (board2d[rowOld, columnOld - i].pieceType != PieceType.Non)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else if (columnDiff > 1)
+                {
+                    for (int i = 1; i < columnDiff; i++)
+                    {
+                        if (board2d[rowOld, columnOld + i].pieceType != PieceType.Non)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            bool DiagonalMoveCheck()
+            {
+                if (rowDiff > 1 && columnDiff > 1)
+                {
+                    for (int i = 1; i < rowDiff; i++)
+                    {
+                        if (board2d[rowOld + i, columnOld + i].pieceType != PieceType.Non)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else if (rowDiff > 1 && columnDiff < -1)
+                {
+                    for (int i = 1; i < rowDiff; i++)
+                    {
+                        if (board2d[rowOld + i, columnOld - i].pieceType != PieceType.Non)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else if (rowDiff < -1 && columnDiff < -1)
+                {
+                    for (int i = 1; i < Math.Abs(rowDiff); i++)
+                    {
+                        if (board2d[rowOld - i, columnOld - i].pieceType != PieceType.Non)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else if (rowDiff < -1 && columnDiff > 1)
+                {
+                    for (int i = 1; i < Math.Abs(rowDiff); i++)
+                    {
+                        if (board2d[rowOld - i, columnOld + i].pieceType != PieceType.Non)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            //Knight valid move
+            if (board1d[first].pieceType == PieceType.Knight)
+            {
+                return (Math.Abs(rowDiff) == 2 && Math.Abs(columnDiff) == 1) ||
+                        (Math.Abs(rowDiff) == 1 && Math.Abs(columnDiff) == 2);
+            }
+
+            //King valid move
+            else if (board1d[first].pieceType == PieceType.King || board1d[first].pieceType == PieceType.King0)
+            {
+                if ((Math.Abs(rowDiff) == 1 && Math.Abs(columnDiff) == 1) ||
+                        (Math.Abs(rowDiff) == 0 && Math.Abs(columnDiff) == 1) ||
+                        (Math.Abs(rowDiff) == 1 && Math.Abs(columnDiff) == 0))
+                {
+                    return true;
+                }
+                // check for castling
+                if (board1d[first].pieceType == PieceType.King0 && Math.Abs(first - second) == 2 && !isThreatened(first, oppositeColor))
+                {
+                    if (second > first)
+                    {
+                        if (board1d[first + 3].pieceType == PieceType.Rock0 &&
+                            board1d[first + 1].pieceType == PieceType.Non && !isThreatened(first + 1, oppositeColor) &&
+                            board1d[first + 2].pieceType == PieceType.Non && !isThreatened(first + 2, oppositeColor))
+                        {
+                            if (color == PieceColor.White)
+                            {
+                                return !(board1d[52].pieceColor == PieceColor.Black && board1d[52].pieceType == PieceType.Pawn ||
+                                        board1d[54].pieceColor == PieceColor.Black && board1d[54].pieceType == PieceType.Pawn ||
+                                        board1d[55].pieceColor == PieceColor.Black && board1d[55].pieceType == PieceType.Pawn);
+                            }
+                            else
+                            {
+                                return !(board1d[12].pieceColor == PieceColor.White && board1d[12].pieceType == PieceType.Pawn ||
+                                        board1d[14].pieceColor == PieceColor.White && board1d[14].pieceType == PieceType.Pawn ||
+                                        board1d[15].pieceColor == PieceColor.White && board1d[15].pieceType == PieceType.Pawn);
+                            }
+                        }
+                        return false;
+                    }
+                    else
+                    {
+                        if (board1d[first - 4].pieceType == PieceType.Rock0 &&
+                            board1d[first - 1].pieceType == PieceType.Non && !isThreatened(first - 1, oppositeColor) &&
+                            board1d[first - 2].pieceType == PieceType.Non && !isThreatened(first - 2, oppositeColor) &&
+                            board1d[first - 3].pieceType == PieceType.Non)
+                        {
+                            if (color == PieceColor.White)
+                            {
+                                return !(board1d[49].pieceColor == PieceColor.Black && board1d[49].pieceType == PieceType.Pawn ||
+                                        board1d[50].pieceColor == PieceColor.Black && board1d[50].pieceType == PieceType.Pawn ||
+                                        board1d[52].pieceColor == PieceColor.Black && board1d[52].pieceType == PieceType.Pawn);
+                            }
+                            else
+                            {
+                                return !(board1d[9].pieceColor == PieceColor.White && board1d[9].pieceType == PieceType.Pawn ||
+                                        board1d[10].pieceColor == PieceColor.White && board1d[10].pieceType == PieceType.Pawn ||
+                                        board1d[12].pieceColor == PieceColor.White && board1d[12].pieceType == PieceType.Pawn);
+                            }
+                        }
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            //Pawn valid move
+            else if (board1d[first].pieceType == PieceType.Pawn)
+            {
+                if (color == PieceColor.White)
+                {
+                    if (first == second + 8 && board1d[second].pieceType == PieceType.Non)
+                    {
+                        return true;
+                    }
+                    else if (first == second + 16 && board1d[second].pieceType == PieceType.Non &&
+                             board1d[first - 8].pieceType == PieceType.Non && rowOld == 6)
+                    {
+                        return true;
+                    }
+                    else if ((first == second + 7 || first == second + 9) && Math.Abs(columnDiff) == 1 &&
+                            (board1d[second].pieceColor == oppositeColor || board1d[second].enPassant))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (first == second - 8 && board1d[second].pieceType == PieceType.Non)
+                    {
+                        return true;
+                    }
+                    else if (first == second - 16 && board1d[second].pieceType == PieceType.Non &&
+                            board1d[first + 8].pieceType == PieceType.Non && rowOld == 1)
+                    {
+                        return true;
+                    }
+                    else if ((first == second - 7 || first == second - 9) && Math.Abs(columnDiff) == 1 &&
+                            (board1d[second].pieceColor == oppositeColor || board1d[second].enPassant))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            //Rock valid moves
+            else if (board1d[first].pieceType == PieceType.Rock || board1d[first].pieceType == PieceType.Rock0)
+            {
+                if (rowDiff != 0 && columnDiff != 0)
+                {
+                    return false;
+                }
+                return CrosslMoveCheck();
+            }
+
+            //Bishop valid moves
+            else if (board1d[first].pieceType == PieceType.Bishop)
+            {
+                if (Math.Abs(rowDiff) != Math.Abs(columnDiff))
+                {
+                    return false;
+                }
+                return DiagonalMoveCheck();
+            }
+
+            //Queen valid moves
+            else if (board1d[first].pieceType == PieceType.Queen)
+            {
+                if (Math.Abs(rowDiff) != Math.Abs(columnDiff) && (rowDiff != 0 && columnDiff != 0))
+                {
+                    return false;
+                }
+                if (rowDiff == 0 || columnDiff == 0)
+                {
+                    return CrosslMoveCheck();
+                }
+                else
+                {
+                    return DiagonalMoveCheck();
+                }
+            }
+            
+            return false;
+        }
     }   
 }
-/*
-
-
-
-
-            fun isValidMove(first: Int, second: Int):Boolean{
-
-                if (board1d[first].pieceColor == board1d[second].pieceColor)
-                {
-                    return false
-                }
-
-                val color = board1d[first].pieceColor
-                val oppositeColor: PieceColor = if (color == PieceColor.White) PieceColor.Black else PieceColor.White
-
-        val rowOld = first / 8
-                val columnOld = first % 8
-        
-        val rowNew = second / 8
-                val columnNew = second % 8
-        
-        val rowDiff = rowNew - rowOld
-                val columnDiff = columnNew - columnOld
-        
-        //Knight valid move
-                if (board1d[first].pieceType == PieceType.Knight)
-                {
-                    return (abs(rowDiff) == 2 && abs(columnDiff) == 1) ||
-                            (abs(rowDiff) == 1 && abs(columnDiff) == 2)
-        }
-                //King valid move
-                else if (board1d[first].pieceType == PieceType.King || board1d[first].pieceType == PieceType.King0)
-                {
-                    if ((abs(rowDiff) == 1 && abs(columnDiff) == 1) ||
-                        (abs(rowDiff) == 0 && abs(columnDiff) == 1) ||
-                        (abs(rowDiff) == 1 && abs(columnDiff) == 0))
-                    {
-                        return true
-                    }
-                    // check for castling
-                    if (board1d[first].pieceType == PieceType.King0 && abs(first - second) == 2 && !isThreatened(first, oppositeColor))
-                    {
-                        if (second > first)
-                        {
-                            if (board1d[first + 3].pieceType == PieceType.Rock0 &&
-                                board1d[first + 1].pieceType == PieceType.Non && !isThreatened(first + 1, oppositeColor) &&
-                                board1d[first + 2].pieceType == PieceType.Non && !isThreatened(first + 2, oppositeColor))
-                            {
-                                return if (color == PieceColor.White)
-                                {
-                                    !(board1d[52].pieceColor == PieceColor.Black && board1d[52].pieceType == PieceType.Pawn ||
-                                            board1d[54].pieceColor == PieceColor.Black && board1d[54].pieceType == PieceType.Pawn ||
-                                            board1d[55].pieceColor == PieceColor.Black && board1d[55].pieceType == PieceType.Pawn)
-                                }
-                                else
-                                {
-                                    !(board1d[12].pieceColor == PieceColor.White && board1d[12].pieceType == PieceType.Pawn ||
-                                            board1d[14].pieceColor == PieceColor.White && board1d[14].pieceType == PieceType.Pawn ||
-                                            board1d[15].pieceColor == PieceColor.White && board1d[15].pieceType == PieceType.Pawn)
-                              }
-                            }
-                            return false
-                        }
-                        else
-                        {
-                            if (board1d[first - 4].pieceType == PieceType.Rock0 &&
-                                board1d[first - 1].pieceType == PieceType.Non && !isThreatened(first - 1, oppositeColor) &&
-                                board1d[first - 2].pieceType == PieceType.Non && !isThreatened(first - 2, oppositeColor) &&
-                                board1d[first - 3].pieceType == PieceType.Non)
-                            {
-                                return if (color == PieceColor.White)
-                                {
-                                    !(board1d[49].pieceColor == PieceColor.Black && board1d[49].pieceType == PieceType.Pawn ||
-                                            board1d[50].pieceColor == PieceColor.Black && board1d[50].pieceType == PieceType.Pawn ||
-                                            board1d[52].pieceColor == PieceColor.Black && board1d[52].pieceType == PieceType.Pawn)
-                                }
-                                else
-                                {
-                                    !(board1d[9].pieceColor == PieceColor.White && board1d[9].pieceType == PieceType.Pawn ||
-                                            board1d[10].pieceColor == PieceColor.White && board1d[10].pieceType == PieceType.Pawn ||
-                                            board1d[12].pieceColor == PieceColor.White && board1d[12].pieceType == PieceType.Pawn)
-                              }
-                            }
-                            return false
-                       }
-                    }
-                    else
-                    {
-                        return false
-                   }
-                }
-                //Pawn valid move
-                else if (board1d[first].pieceType == PieceType.Pawn)
-                {
-                    if (color == PieceColor.White)
-                    {
-                        if (first == second + 8 && board1d[second].pieceType == PieceType.Non)
-                        {
-                            return true
-                        }
-                        else if (first == second + 16 && board1d[second].pieceType == PieceType.Non &&
-                                   board1d[first - 8].pieceType == PieceType.Non && rowOld == 6)
-                        {
-                            return true
-                       }
-                        else if ((first == second + 7 || first == second + 9) && abs(columnDiff) == 1 &&
-                           (board1d[second].pieceColor == oppositeColor || board1d[second].enPassant))
-                        {
-                            return true
-                       }
-                    }
-                    else
-                    {
-                        if (first == second - 8 && board1d[second].pieceType == PieceType.Non)
-                        {
-                            return true
-                        }
-                        else if (first == second - 16 && board1d[second].pieceType == PieceType.Non &&
-                           board1d[first + 8].pieceType == PieceType.Non && rowOld == 1)
-                        {
-                            return true
-                       }
-                        else if ((first == second - 7 || first == second - 9) && abs(columnDiff) == 1 &&
-                           (board1d[second].pieceColor == oppositeColor || board1d[second].enPassant))
-                        {
-                            return true
-                       }
-                    }
-                    return false
-                }
-                //Rock valid moves
-                else if (board1d[first].pieceType == PieceType.Rock || board1d[first].pieceType == PieceType.Rock0)
-                {
-                    if (rowDiff != 0 && columnDiff != 0)
-                    {
-                        return false
-                    }
-                    if (rowDiff > 1)
-                    {
-                        for (i in 1 until rowDiff)
-                        {
-                            if (board2d[rowOld + i][columnOld].pieceType != PieceType.Non)
-                            {
-                                return false
-                            }
-                        }
-                    }
-                    else if (rowDiff < -1)
-                    {
-                        for (i in 1 until abs(rowDiff))
-                        {
-                            if (board2d[rowOld - i][columnOld].pieceType != PieceType.Non)
-                            {
-                                return false
-                            }
-                        }
-                    }
-                    else if (columnDiff < -1)
-                    {
-                        for (i in 1 until abs(columnDiff))
-                        {
-                            if (board2d[rowOld][columnOld - i].pieceType != PieceType.Non)
-                            {
-                                return false
-                            }
-                        }
-                    }
-                    else if (columnDiff > 1)
-                    {
-                        for (i in 1 until abs(columnDiff))
-                        {
-                            if (board2d[rowOld][columnOld + i].pieceType != PieceType.Non)
-                            {
-                                return false
-                            }
-                        }
-                    }
-                    return true
-                }
-                //Bishop valid moves
-                else if (board1d[first].pieceType == PieceType.Bishop)
-                {
-                    if (abs(rowDiff) != abs(columnDiff))
-                    {
-                        return false
-                    }
-                    if (rowDiff > 1 && columnDiff > 1)
-                    {
-                        for (i in 1 until rowDiff)
-                        {
-                            if (board2d[rowOld + i][columnOld + i].pieceType != PieceType.Non)
-                            {
-                                return false
-                            }
-                        }
-                    }
-                    else if (rowDiff > 1 && columnDiff < -1)
-                    {
-                        for (i in 1 until rowDiff)
-                        {
-                            if (board2d[rowOld + i][columnOld - i].pieceType != PieceType.Non)
-                            {
-                                return false
-                            }
-                        }
-                    }
-                    else if (rowDiff < -1 && columnDiff < -1)
-                    {
-                        for (i in 1 until abs(rowDiff))
-                        {
-                            if (board2d[rowOld - i][columnOld - i].pieceType != PieceType.Non)
-                            {
-                                return false
-                            }
-                        }
-                    }
-                    else if (rowDiff < -1 && columnDiff > 1)
-                    {
-                        for (i in 1 until abs(rowDiff))
-                        {
-                            if (board2d[rowOld - i][columnOld + i].pieceType != PieceType.Non)
-                            {
-                                return false
-                            }
-                        }
-                    }
-                    return true
-                }
-                //Queen valid moves
-                else if (board1d[first].pieceType == PieceType.Queen)
-                {
-                    if (abs(rowDiff) != abs(columnDiff) && (rowDiff != 0 && columnDiff != 0))
-                    {
-                        return false
-                    }
-                    if (rowDiff == 0 || columnDiff == 0)
-                    {
-                        if (rowDiff > 1)
-                        {
-                            for (i in 1 until rowDiff)
-                            {
-                                if (board2d[rowOld + i][columnOld].pieceType != PieceType.Non)
-                                {
-                                    return false
-                                }
-                            }
-                        }
-                        else if (rowDiff < -1)
-                        {
-                            for (i in 1 until abs(rowDiff))
-                            {
-                                if (board2d[rowOld - i][columnOld].pieceType != PieceType.Non)
-                                {
-                                    return false
-                                }
-                            }
-                        }
-                        else if (columnDiff < -1)
-                        {
-                            for (i in 1 until abs(columnDiff))
-                            {
-                                if (board2d[rowOld][columnOld - i].pieceType != PieceType.Non)
-                                {
-                                    return false
-                                }
-                            }
-                        }
-                        else if (columnDiff > 1)
-                        {
-                            for (i in 1 until abs(columnDiff))
-                            {
-                                if (board2d[rowOld][columnOld + i].pieceType != PieceType.Non)
-                                {
-                                    return false
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (rowDiff > 1 && columnDiff > 1)
-                        {
-                            for (i in 1 until rowDiff)
-                            {
-                                if (board2d[rowOld + i][columnOld + i].pieceType != PieceType.Non)
-                                {
-                                    return false
-                                }
-                            }
-                        }
-                        else if (rowDiff > 1 && columnDiff < -1)
-                        {
-                            for (i in 1 until rowDiff)
-                            {
-                                if (board2d[rowOld + i][columnOld - i].pieceType != PieceType.Non)
-                                {
-                                    return false
-                                }
-                            }
-                        }
-                        else if (rowDiff < -1 && columnDiff < -1)
-                        {
-                            for (i in 1 until abs(rowDiff))
-                            {
-                                if (board2d[rowOld - i][columnOld - i].pieceType != PieceType.Non)
-                                {
-                                    return false
-                                }
-                            }
-                        }
-                        else if (rowDiff < -1 && columnDiff > 1)
-                        {
-                            for (i in 1 until abs(rowDiff))
-                            {
-                                if (board2d[rowOld - i][columnOld + i].pieceType != PieceType.Non)
-                                {
-                                    return false
-                                }
-                            }
-                        }
-                    }
-                    return true
-                }
-                return false
-            }
-            }
-}*/
