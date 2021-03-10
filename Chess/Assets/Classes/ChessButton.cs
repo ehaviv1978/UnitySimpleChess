@@ -6,22 +6,21 @@ namespace Assets.Classes
 {
     class ChessButton
     {
-        public Button button;
-        public Image shape;
-        public Texture2D cursorShape;
-        public int tempIndex =0;
-        public ChessPiece piece;
+        public Button Button;
+        public Image Shape;
+        public Texture2D CursorShape;
+        public int tempIndex = 0;
+        public ChessPiece Piece;
 
-        [UnityEngine.SerializeField]
+        [SerializeField]
         private int m_index;
         public int index => m_index;
 
         public ChessButton(Button button, int index)
         {
-            this.button = button;
+            Button = button;
             m_index = index;
-            cursorShape = null;
-            piece = new ChessPiece();
+            CursorShape = null;
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace ChessLogic 
 { 
-    class ChessPiece
+    struct ChessPiece
     {
-        public ChessPieceType Type = ChessPieceType.Non;
-        public ChessColor Color = ChessColor.Non;
+        public PieceType Type;
+        public PieceColor Color;
     }
 }

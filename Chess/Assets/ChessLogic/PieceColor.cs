@@ -1,6 +1,6 @@
 ﻿namespace ChessLogic
 {
-    enum ChessColor
+    enum PieceColor
     {
         Black,
         White,
