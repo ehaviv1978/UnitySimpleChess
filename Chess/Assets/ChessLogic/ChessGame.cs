@@ -163,7 +163,7 @@ namespace ChessLogic
         }
 
 
-        public void MakeMove(int first,int second)
+        public void makeMove(int first, int second)
         {
             SwitchTurnColor();
             if (board1d[first].pieceType == PieceType.Pawn && board1d[second].enPassant)
@@ -202,13 +202,13 @@ namespace ChessLogic
                 //Do Castling
                 if (second == first + 2)
                 {
-                    MakeMove(second + 1, second - 1);
+                    makeMove(second + 1, second - 1);
                     SwitchTurnColor();
                     return;
                 }
                 else if (second == first - 2)
                 {
-                    MakeMove(second - 2, second + 1);
+                    makeMove(second - 2, second + 1);
                     SwitchTurnColor();
                     return;
                 }
@@ -223,7 +223,7 @@ namespace ChessLogic
                 {
                     board1d[first - 8].enPassant = true;
                 }
-                else if (second >= 0 && second < 8 || second >= 56 && second < 64){
+                else if (second >= 0 && second < 8 || second >= 56 && second < 64) {
                     board1d[second].pieceType = PieceType.Queen;
                 }
             }
@@ -232,9 +232,9 @@ namespace ChessLogic
         }
 
 
-        public void MoveBack()
+        public void moveBack()
         {
-            if (moveHistory.Count>0 && moveHistoryPointer > 0)
+            if (moveHistory.Count > 0 && moveHistoryPointer > 0)
             {
                 SwitchTurnColor();
                 moveHistoryPointer--;
@@ -258,7 +258,7 @@ namespace ChessLogic
         }
 
 
-        public bool IsValidMove(int first, int second)
+        public bool isValidMove(int first, int second)
         {
             return true;
         }
@@ -270,7 +270,7 @@ namespace ChessLogic
             {
                 foreach (var i in whitePieces)
                 {
-                    if (IsValidMove(i, index))
+                    if (isValidMove(i, index))
                     {
                         return true;
                     }
@@ -281,7 +281,7 @@ namespace ChessLogic
             {
                 foreach (var i in blackPieces)
                 {
-                    if (IsValidMove(i, index))
+                    if (isValidMove(i, index))
                     {
                         return true;
                     }
@@ -290,789 +290,572 @@ namespace ChessLogic
             }
         }
 
-    }
+
+
+        public bool isDraw(PieceColor color)
+        {
+            var tempHistory = moveHistory.Take(moveHistory.Count).ToList();
+            if (color == PieceColor.Black)
+            {
+                foreach (int piece in blackPieces.Take(blackPieces.Count).ToArray())
+                {
+                    foreach (int move in possibleMoves(piece))
+                    {
+                        makeMove(piece, move);
+                        if (!isDoingCheck(PieceColor.White))
+                        {
+                            moveBack();
+                            moveHistory = tempHistory.Take(tempHistory.Count).ToList();
+                            return false;
+                        }
+                        moveBack();
+                    }
+                }
+                moveHistory = tempHistory.Take(tempHistory.Count).ToList();
+                return true;
+            }
+            else
+            {
+                foreach (int piece in whitePieces.Take(whitePieces.Count).ToArray())
+                {
+                    foreach (int move in possibleMoves(piece))
+                    {
+                        makeMove(piece, move);
+                        if (!isDoingCheck(PieceColor.Black))
+                        {
+                            moveBack();
+                            moveHistory = tempHistory.Take(tempHistory.Count).ToList();
+                            return false;
+                        }
+                        moveBack();
+                    }
+                }
+                moveHistory = tempHistory.Take(tempHistory.Count).ToList();
+                return true;
+            }
+        }
+
+
+        public bool isThreatened(int index, PieceColor color)
+        {
+            return true;
+        }
+
+
+
+        public bool isDoingCheck(PieceColor color)
+        {
+            if (color == PieceColor.Black)
+            {
+                foreach (int piece in whitePieces)
+                {
+                    if (board1d[piece].pieceType == PieceType.King || board1d[piece].pieceType == PieceType.King0)
+                    {
+                        return isThreatened(piece, PieceColor.Black);
+                    }
+                }
+            }
+            else
+            {
+                foreach (int piece in blackPieces)
+                {
+                    if (board1d[piece].pieceType == PieceType.King || board1d[piece].pieceType == PieceType.King0)
+                    {
+                        return isThreatened(piece, PieceColor.White);
+                    }
+                }
+            }
+            return false;
+        }
+
+
+
+        public bool isDoingCheckmate(PieceColor color)
+        {
+            var tempHistory = moveHistory.Take(moveHistory.Count).ToList();
+            var pieces = color == PieceColor.Black ? whitePieces : blackPieces;
+
+            foreach (int piece in pieces.Take(pieces.Count).ToArray())
+            {
+                foreach (int move in possibleMoves(piece))
+                {
+                    makeMove(piece, move);
+                    if (!isDoingCheck(color))
+                    {
+                        moveBack();
+                        moveHistory = tempHistory.Take(tempHistory.Count).ToList();
+                        return false;
+                    }
+                    moveBack();
+                }
+            }
+            moveHistory = tempHistory.Take(tempHistory.Count).ToList();
+            return true;
+        }
+
+
+        //return an array of legal moves for a given piece
+        public List<int> possibleMoves(int index)
+        {
+            var color = board1d[index].pieceColor;
+            var oppositeColor = color == PieceColor.White ? PieceColor.Black : PieceColor.White;
+            var rowOld = index / 8;
+            var columnOld = index % 8;
+            var possibleMoves = new List<int>();
+
+            void DiagonalMove()
+            {
+                for (int n = 1; n < 8; n++)
+                {
+                    if (rowOld + n < 8 && columnOld + n < 8)
+                    {
+                        if (board2d[rowOld + n, columnOld + n].pieceColor == PieceColor.Non)
+                        {
+                            possibleMoves.Add(index + n * 9);
+                        }
+                        else if (board2d[rowOld + n, columnOld + n].pieceColor == oppositeColor)
+                        {
+                            possibleMoves.Add(index + n * 9);
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                for (int n = 1; n < 8; n++)
+                {
+                    if (rowOld - n > -1 && columnOld + n < 8)
+                    {
+                        if (board2d[rowOld - n, columnOld + n].pieceColor == PieceColor.Non)
+                        {
+                            possibleMoves.Add(index - n * 7);
+                        }
+                        else if (board2d[rowOld - n, columnOld + n].pieceColor == oppositeColor)
+                        {
+                            possibleMoves.Add(index - n * 7);
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                for (int n = 1; n < 8; n++)
+                {
+                    if (rowOld + n < 8 && columnOld - n > -1)
+                    {
+                        if (board2d[rowOld + n, columnOld - n].pieceColor == PieceColor.Non)
+                        {
+                            possibleMoves.Add(index + n * 7);
+                        }
+                        else if (board2d[rowOld + n, columnOld - n].pieceColor == oppositeColor)
+                        {
+                            possibleMoves.Add(index + n * 7);
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                for (int n = 1; n < 8; n++)
+                {
+                    if (rowOld - n > -1 && columnOld - n > -1)
+                    {
+                        if (board2d[rowOld - n, columnOld - n].pieceColor == PieceColor.Non)
+                        {
+                            possibleMoves.Add(index - n * 9);
+                        }
+                        else if (board2d[rowOld - n, columnOld - n].pieceColor == oppositeColor)
+                        {
+                            possibleMoves.Add(index - n * 9);
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            void CrossMove()
+            {
+                for (int n = 1; n < 8; n++)
+                {
+                    if (rowOld + n < 8)
+                    {
+                        if (board2d[rowOld + n, columnOld].pieceColor == PieceColor.Non)
+                        {
+                            possibleMoves.Add(index + n * 8);
+                        }
+                        else if (board2d[rowOld + n, columnOld].pieceColor == oppositeColor)
+                        {
+                            possibleMoves.Add(index + n * 8);
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                for (int n = 1; n < 8; n++)
+                {
+                    if (rowOld - n > -1)
+                    {
+                        if (board2d[rowOld - n, columnOld].pieceColor == PieceColor.Non)
+                        {
+                            possibleMoves.Add(index - n * 8);
+                        }
+                        else if (board2d[rowOld - n, columnOld].pieceColor == oppositeColor)
+                        {
+                            possibleMoves.Add(index - n * 8);
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                for (int n = 1; n < 8; n++)
+                {
+                    if (columnOld + n < 8)
+                    {
+                        if (board2d[rowOld, columnOld + n].pieceColor == PieceColor.Non)
+                        {
+                            possibleMoves.Add(index + n);
+                        }
+                        else if (board2d[rowOld, columnOld + n].pieceColor == oppositeColor)
+                        {
+                            possibleMoves.Add(index + n);
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                for (int n = 1; n < 8; n++)
+                {
+                    if (columnOld - n > -1)
+                    {
+                        if (board2d[rowOld, columnOld - n].pieceColor == PieceColor.Non)
+                        {
+                            possibleMoves.Add(index - n);
+                        }
+                        else if (board2d[rowOld, columnOld - n].pieceColor == oppositeColor)
+                        {
+                            possibleMoves.Add(index - n);
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            //Check Knight posible moves
+            if (board1d[index].pieceType == PieceType.Knight)
+            {
+                try
+                {
+                    if (board2d[rowOld - 2,columnOld - 1].pieceColor != color)
+                    {
+                        possibleMoves.Add(index - 17);
+                    }
+                }
+                catch (IndexOutOfRangeException) { }
+                try
+                {
+                    if (board2d[rowOld - 2,columnOld + 1].pieceColor != color)
+                    {
+                        possibleMoves.Add(index - 15);
+                    }
+                }
+                catch (IndexOutOfRangeException) { }
+                try
+                {
+                    if (board2d[rowOld - 1, columnOld - 2].pieceColor != color)
+                    {
+                        possibleMoves.Add(index - 10);
+                    }
+                }
+                catch (IndexOutOfRangeException) { }
+                try
+                {
+                    if (board2d[rowOld - 1, columnOld + 2].pieceColor != color)
+                    {
+                        possibleMoves.Add(index - 6);
+                    }
+                }
+                catch (IndexOutOfRangeException) { }
+                try
+                {
+                    if (board2d[rowOld + 1, columnOld - 2].pieceColor != color)
+                    {
+                        possibleMoves.Add(index + 6);
+                    }
+                }
+                catch (IndexOutOfRangeException) { }
+                try
+                {
+                    if (board2d[rowOld + 1, columnOld + 2].pieceColor != color)
+                    {
+                        possibleMoves.Add(index + 10);
+                    }
+                }
+                catch (IndexOutOfRangeException) { }
+                try
+                {
+                    if (board2d[rowOld + 2, columnOld - 1].pieceColor != color)
+                    {
+                        possibleMoves.Add(index + 15);
+                    }
+                }
+                catch (IndexOutOfRangeException) { }
+                try
+                {
+                    if (board2d[rowOld + 2, columnOld + 1].pieceColor != color)
+                    {
+                        possibleMoves.Add(index + 17);
+                    }
+                }
+                catch (IndexOutOfRangeException) { }
+            }
+
+            //Check King posible moves
+            else if (board1d[index].pieceType == PieceType.King || board1d[index].pieceType == PieceType.King0)
+            {
+                if (rowOld - 1 > -1 && columnOld - 1 > -1)
+                {
+                    if (board2d[rowOld - 1, columnOld - 1].pieceColor != color)
+                    {
+                        possibleMoves.Add(index - 9);
+                    }
+                }
+                if (rowOld - 1 > -1 && columnOld + 1 < 8)
+                {
+                    if (board2d[rowOld - 1, columnOld + 1].pieceColor != color)
+                    {
+                        possibleMoves.Add(index - 7);
+                    }
+                }
+                if (rowOld + 1 < 8 && columnOld - 1 > -1)
+                {
+                    if (board2d[rowOld + 1, columnOld - 1].pieceColor != color)
+                    {
+                        possibleMoves.Add(index + 7);
+                    }
+                }
+                if (rowOld + 1 < 8 && columnOld + 1 < 8)
+                {
+                    if (board2d[rowOld + 1, columnOld + 1].pieceColor != color)
+                    {
+                        possibleMoves.Add(index + 9);
+                    }
+                }
+                if (rowOld - 1 > -1)
+                {
+                    if (board2d[rowOld - 1, columnOld].pieceColor != color)
+                    {
+                        possibleMoves.Add(index - 8);
+                    }
+                }
+                if (rowOld + 1 < 8)
+                {
+                    if (board2d[rowOld + 1, columnOld].pieceColor != color)
+                    {
+                        possibleMoves.Add(index + 8);
+                    }
+                }
+                if (columnOld - 1 > -1)
+                {
+                    if (board2d[rowOld, columnOld - 1].pieceColor != color)
+                    {
+                        possibleMoves.Add(index - 1);
+                    }
+                }
+                if (columnOld + 1 < 8)
+                {
+                    if (board2d[rowOld, columnOld + 1].pieceColor != color)
+                    {
+                        possibleMoves.Add(index + 1);
+                    }
+                }
+                // check for castling
+                if (board1d[index].pieceType == PieceType.King0)
+                {
+                    if (board1d[index + 3].pieceType == PieceType.Rock0 &&
+                        board1d[index + 2].pieceType == PieceType.Non &&
+                        board1d[index + 1].pieceType == PieceType.Non)
+                    {
+                        if (!isThreatened(index, oppositeColor) &&
+                            !isThreatened(index + 2, oppositeColor) &&
+                            !isThreatened(index + 1, oppositeColor))
+                        {
+                            if (board1d[index].pieceColor == PieceColor.White)
+                            {
+                                if (!(board1d[52].pieceColor == PieceColor.Black && board1d[52].pieceType == PieceType.Pawn ||
+                                    board1d[54].pieceColor == PieceColor.Black && board1d[54].pieceType == PieceType.Pawn ||
+                                    board1d[55].pieceColor == PieceColor.Black && board1d[55].pieceType == PieceType.Pawn))
+                                {
+                                    possibleMoves.Add(index + 2);
+                                }
+                            }
+                            else
+                            {
+                                if (!(board1d[12].pieceColor == PieceColor.White && board1d[12].pieceType == PieceType.Pawn ||
+                                    board1d[14].pieceColor == PieceColor.White && board1d[14].pieceType == PieceType.Pawn ||
+                                    board1d[15].pieceColor == PieceColor.White && board1d[15].pieceType == PieceType.Pawn))
+                                {
+                                    possibleMoves.Add(index + 2);
+                                }
+                            }
+                        
+                        }
+                    }
+                    if (board1d[index - 4].pieceType == PieceType.Rock0 &&
+                        board1d[index - 3].pieceType == PieceType.Non &&
+                        board1d[index - 2].pieceType == PieceType.Non &&
+                        board1d[index - 1].pieceType == PieceType.Non)
+                    {
+                        if (!isThreatened(index, oppositeColor) &&
+                            !isThreatened(index - 2, oppositeColor) &&
+                            !isThreatened(index - 1, oppositeColor))
+                        {
+                            if (board1d[index].pieceColor == PieceColor.White)
+                            {
+                                if (!(board1d[49].pieceColor == PieceColor.Black && board1d[49].pieceType == PieceType.Pawn ||
+                                    board1d[50].pieceColor == PieceColor.Black && board1d[50].pieceType == PieceType.Pawn ||
+                                    board1d[52].pieceColor == PieceColor.Black && board1d[52].pieceType == PieceType.Pawn))
+                                {
+                                    possibleMoves.Add(index - 2);
+                                }
+                            }
+                            else
+                            {
+                                if (!(board1d[9].pieceColor == PieceColor.White && board1d[9].pieceType == PieceType.Pawn ||
+                                    board1d[10].pieceColor == PieceColor.White && board1d[10].pieceType == PieceType.Pawn ||
+                                    board1d[12].pieceColor == PieceColor.White && board1d[12].pieceType == PieceType.Pawn))
+                                {
+                                    possibleMoves.Add(index - 2);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Calculate Pawn possible moves
+            else if (board1d[index].pieceType == PieceType.Pawn)
+            {
+                var num = board1d[index].pieceColor == PieceColor.Black? 1: -1;
+               
+                if (((board1d[index].pieceColor == PieceColor.White && (index / 8) == 6) ||
+                    (board1d[index].pieceColor == PieceColor.Black && (index / 8) == 1)) &&
+                    board2d[rowOld + num * 2,columnOld].pieceColor == PieceColor.Non &&
+                    board2d[rowOld + num,columnOld].pieceColor == PieceColor.Non)
+                {
+                    possibleMoves.Add(index + num * 16);
+                }
+                try
+                {
+                    if (board2d[rowOld + num,columnOld].pieceColor == PieceColor.Non)
+                    {
+                        possibleMoves.Add(index + num * 8);
+                    }
+                }
+                catch (IndexOutOfRangeException) { }
+                try
+                {
+                    if (board2d[rowOld + num,columnOld + 1].pieceColor == oppositeColor ||
+                        (board2d[rowOld + num,columnOld + 1].enPassant))
+
+                    {
+                        possibleMoves.Add(index + num * 8 + 1);
+                    }
+                }
+                catch (IndexOutOfRangeException) { }
+                try
+                {
+                    if (board2d[rowOld + num,columnOld - 1].pieceColor == oppositeColor ||
+                        (board2d[rowOld + num,columnOld - 1].enPassant))
+                    {
+                        possibleMoves.Add(index + num * 8 - 1);
+                    }
+                }
+                catch (IndexOutOfRangeException) { }
+            }
+
+            //Calculate Rock possible moves
+            else if (board1d[index].pieceType == PieceType.Rock || board1d[index].pieceType == PieceType.Rock0)
+            {
+                CrossMove();
+            }
+
+            //Calculate Bishop Possible moves
+            else if (board1d[index].pieceType == PieceType.Bishop)
+            {
+                DiagonalMove();
+            }
+
+            //Calculate Queen Posible moves
+            else if (board1d[index].pieceType == PieceType.Queen)
+            {
+                CrossMove();
+                DiagonalMove();          
+            }
+
+            return possibleMoves;
+        }
+    
+
+    }   
 }
 /*
 
 
-
-fun isDraw(color: PieceColor): Boolean
-{
-    val tempHistory = moveHistory.copyOf()
-        if (color == PieceColor.Black)
-    {
-        for (piece in blackPieces.toList())
-        {
-            for (move in possibleMoves(piece))
-            {
-                makeMove(piece, move)
-                    if (!isDoingCheck(PieceColor.White))
-                {
-                    moveBack()
-                        moveHistory = tempHistory.copyOf()
-                        return false
-                    }
-                moveBack()
-                }
-        }
-        moveHistory = tempHistory.copyOf()
-            return true
-        }
-    else
-    {
-        for (piece in whitePieces.toList())
-        {
-            for (move in possibleMoves(piece))
-            {
-                makeMove(piece, move)
-                    if (!isDoingCheck(PieceColor.Black))
-                {
-                    moveBack()
-                        moveHistory = tempHistory.copyOf()
-                        return false
-                    }
-                moveBack()
-                }
-        }
-        moveHistory = tempHistory.copyOf()
-            return true
-        }
-}
-
-fun isDoingCheck(color: PieceColor): Boolean
-{
-    if (color == PieceColor.Black)
-    {
-        for (piece in whitePieces)
-        {
-            if (board1d[piece].pieceType == PieceType.King || board1d[piece].pieceType == PieceType.King0)
-            {
-                return isThreatened(piece, PieceColor.Black)
-                }
-        }
-    }
-    else
-    {
-        for (piece in blackPieces)
-        {
-            if (board1d[piece].pieceType == PieceType.King || board1d[piece].pieceType == PieceType.King0)
-            {
-                return isThreatened(piece, PieceColor.White)
-                }
-        }
-    }
-    return false
-    }
-
-
-fun isDoingCheckmate(color: PieceColor): Boolean
-{
-    val tempHistory = moveHistory.copyOf()
-        val pieces = if (color == PieceColor.Black)
-    {
-        whitePieces
-        }
-    else
-    {
-        blackPieces
-        }
-
-    for (piece in pieces.toList())
-    {
-        for (move in possibleMoves(piece))
-        {
-            makeMove(piece, move)
-                if (!isDoingCheck(color))
-            {
-                moveBack()
-                    moveHistory = tempHistory.copyOf()
-                    return false
-                }
-            moveBack()
-            }
-    }
-    moveHistory = tempHistory.copyOf()
-        return true
-    }
-
-
-//return an array of legal moves for a given piece
-fun possibleMoves(index: Int): MutableList<Int> {
-    val color = board1d[index].pieceColor
-
-        val oppositeColor = if (color == PieceColor.White)
-    {
-        PieceColor.Black
-        }
-    else
-    {
-        PieceColor.White
-        }
-
-    val rowOld = index / 8
-        val columnOld = index % 8
-
-        var possibleMoves = mutableListOf<Int>()
-
-        if (board1d[index].pieceType == PieceType.Knight)
-    {
-        try
-        {
-            if (board2d[rowOld - 2][columnOld - 1].pieceColor != color)
-            {
-                possibleMoves.add(index - 17)
-                }
-        }
-        catch (e: ArrayIndexOutOfBoundsException) {
-            null
-            }
-        try
-        {
-            if (board2d[rowOld - 2][columnOld + 1].pieceColor != color)
-            {
-                possibleMoves.add(index - 15)
-                }
-        }
-        catch (e: ArrayIndexOutOfBoundsException) {
-            null
-            }
-        try
-        {
-            if (board2d[rowOld - 1][columnOld - 2].pieceColor != color)
-            {
-                possibleMoves.add(index - 10)
-                }
-        }
-        catch (e: ArrayIndexOutOfBoundsException) {
-            null
-            }
-        try
-        {
-            if (board2d[rowOld - 1][columnOld + 2].pieceColor != color)
-            {
-                possibleMoves.add(index - 6)
-                }
-        }
-        catch (e: ArrayIndexOutOfBoundsException) {
-            null
-            }
-        try
-        {
-            if (board2d[rowOld + 1][columnOld - 2].pieceColor != color)
-            {
-                possibleMoves.add(index + 6)
-                }
-        }
-        catch (e: ArrayIndexOutOfBoundsException) {
-            null
-            }
-        try
-        {
-            if (board2d[rowOld + 1][columnOld + 2].pieceColor != color)
-            {
-                possibleMoves.add(index + 10)
-                }
-        }
-        catch (e: ArrayIndexOutOfBoundsException) {
-            null
-            }
-        try
-        {
-            if (board2d[rowOld + 2][columnOld - 1].pieceColor != color)
-            {
-                possibleMoves.add(index + 15)
-                }
-        }
-        catch (e: ArrayIndexOutOfBoundsException) {
-            null
-            }
-        try
-        {
-            if (board2d[rowOld + 2][columnOld + 1].pieceColor != color)
-            {
-                possibleMoves.add(index + 17)
-                }
-        }
-        catch (e: ArrayIndexOutOfBoundsException) {
-            null
-            }
-        } else if (board1d[index].pieceType == PieceType.King || board1d[index].pieceType == PieceType.King0)
-        {
-            if (rowOld - 1 > -1 && columnOld - 1 > -1)
-            {
-                if (board2d[rowOld - 1][columnOld - 1].pieceColor != color)
-                {
-                    possibleMoves.add(index - 9)
-                }
-            }
-            if (rowOld - 1 > -1 && columnOld + 1 < 8)
-            {
-                if (board2d[rowOld - 1][columnOld + 1].pieceColor != color)
-                {
-                    possibleMoves.add(index - 7)
-                }
-            }
-            if (rowOld + 1 < 8 && columnOld - 1 > -1)
-            {
-                if (board2d[rowOld + 1][columnOld - 1].pieceColor != color)
-                {
-                    possibleMoves.add(index + 7)
-                }
-            }
-            if (rowOld + 1 < 8 && columnOld + 1 < 8)
-            {
-                if (board2d[rowOld + 1][columnOld + 1].pieceColor != color)
-                {
-                    possibleMoves.add(index + 9)
-                }
-            }
-            if (rowOld - 1 > -1)
-            {
-                if (board2d[rowOld - 1][columnOld].pieceColor != color)
-                {
-                    possibleMoves.add(index - 8)
-                }
-            }
-            if (rowOld + 1 < 8)
-            {
-                if (board2d[rowOld + 1][columnOld].pieceColor != color)
-                {
-                    possibleMoves.add(index + 8)
-                }
-            }
-            if (columnOld - 1 > -1)
-            {
-                if (board2d[rowOld][columnOld - 1].pieceColor != color)
-                {
-                    possibleMoves.add(index - 1)
-                }
-            }
-            if (columnOld + 1 < 8)
-            {
-                if (board2d[rowOld][columnOld + 1].pieceColor != color)
-                {
-                    possibleMoves.add(index + 1)
-                }
-            }
-            // check for castling
-            if (board1d[index].pieceType == PieceType.King0)
-            {
-                if (board1d[index + 3].pieceType == PieceType.Rock0 &&
-                    board1d[index + 2].pieceType == PieceType.Non &&
-                    board1d[index + 1].pieceType == PieceType.Non
-                )
-                {
-                    if (!isThreatened(index, oppositeColor) &&
-                        !isThreatened(index + 2, oppositeColor) &&
-                        !isThreatened(index + 1, oppositeColor)
-                    )
-                    {
-                        if (board1d[index].pieceColor == PieceColor.White)
-                        {
-                            if (board1d[52].pieceColor == PieceColor.Black && board1d[52].pieceType == PieceType.Pawn ||
-                                board1d[54].pieceColor == PieceColor.Black && board1d[54].pieceType == PieceType.Pawn ||
-                                board1d[55].pieceColor == PieceColor.Black && board1d[55].pieceType == PieceType.Pawn
-                            )
-                            {
-                                null
-                            }
-                            else
-                            {
-                                possibleMoves.add(index + 2)
-                            }
-                        }
-                        else
-                        {
-                            if (board1d[12].pieceColor == PieceColor.White && board1d[12].pieceType == PieceType.Pawn ||
-                                board1d[14].pieceColor == PieceColor.White && board1d[14].pieceType == PieceType.Pawn ||
-                                board1d[15].pieceColor == PieceColor.White && board1d[15].pieceType == PieceType.Pawn
-                            )
-                            {
-                                null
-                            }
-                            else
-                            {
-                                possibleMoves.add(index + 2)
-                            }
-                        }
-                    }
-                }
-                if (board1d[index - 4].pieceType == PieceType.Rock0 &&
-                    board1d[index - 3].pieceType == PieceType.Non &&
-                    board1d[index - 2].pieceType == PieceType.Non &&
-                    board1d[index - 1].pieceType == PieceType.Non
-                )
-                {
-                    if (!isThreatened(index, oppositeColor) &&
-                        !isThreatened(index - 2, oppositeColor) &&
-                        !isThreatened(index - 1, oppositeColor)
-                    )
-                    {
-                        if (board1d[index].pieceColor == PieceColor.White)
-                        {
-                            if (board1d[49].pieceColor == PieceColor.Black && board1d[49].pieceType == PieceType.Pawn ||
-                                board1d[50].pieceColor == PieceColor.Black && board1d[50].pieceType == PieceType.Pawn ||
-                                board1d[52].pieceColor == PieceColor.Black && board1d[52].pieceType == PieceType.Pawn
-                            )
-                            {
-                                null
-                            }
-                            else
-                            {
-                                possibleMoves.add(index - 2)
-                            }
-                        }
-                        else
-                        {
-                            if (board1d[9].pieceColor == PieceColor.White && board1d[9].pieceType == PieceType.Pawn ||
-                                board1d[10].pieceColor == PieceColor.White && board1d[10].pieceType == PieceType.Pawn ||
-                                board1d[12].pieceColor == PieceColor.White && board1d[12].pieceType == PieceType.Pawn
-                            )
-                            {
-                                null
-                            }
-                            else
-                            {
-                                possibleMoves.add(index - 2)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        //Calculate Pawn possible moves
-        else if (board1d[index].pieceType == PieceType.Pawn)
-        {
-            var num = -1
-            if (board1d[index].pieceColor == PieceColor.Black)
-            {
-                num = 1
-            }
-            if (((board1d[index].pieceColor == PieceColor.White && (index / 8) == 6) ||
-                        (board1d[index].pieceColor == PieceColor.Black && (index / 8) == 1)) &&
-                board2d[rowOld + num * 2][columnOld].pieceColor == PieceColor.Non &&
-                board2d[rowOld + num][columnOld].pieceColor == PieceColor.Non
-            )
-            {
-                possibleMoves.add(index + num * 16)
-            }
-            try
-            {
-                if (board2d[rowOld + num][columnOld].pieceColor == PieceColor.Non)
-                {
-                    possibleMoves.add(index + num * 8)
-                }
-            }
-            catch (e: ArrayIndexOutOfBoundsException) {
-                null
-            }
-            try
-            {
-                if (board2d[rowOld + num][columnOld + 1].pieceColor == oppositeColor ||
-                    (board2d[rowOld + num][columnOld + 1].enPassant)
-                )
-                {
-                    possibleMoves.add(index + num * 8 + 1)
-                }
-            }
-            catch (e: ArrayIndexOutOfBoundsException) {
-                null
-            }
-            try
-            {
-                if (board2d[rowOld + num][columnOld - 1].pieceColor == oppositeColor ||
-                    (board2d[rowOld + num][columnOld - 1].enPassant)
-                )
-                {
-                    possibleMoves.add(index + num * 8 - 1)
-                }
-            }
-            catch (e: ArrayIndexOutOfBoundsException) {
-                null
-            }
-            }
-        //Calculate Rock possible moves
-        else if (board1d[index].pieceType == PieceType.Rock || board1d[index].pieceType == PieceType.Rock0)
-            {
-                for (n in 1..7)
-                {
-                    if (rowOld + n < 8)
-                    {
-                        if (board2d[rowOld + n][columnOld].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index + n * 8)
-                        }
-                        else if (board2d[rowOld + n][columnOld].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index + n * 8)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (rowOld - n > -1)
-                    {
-                        if (board2d[rowOld - n][columnOld].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index - n * 8)
-                        }
-                        else if (board2d[rowOld - n][columnOld].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index - n * 8)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (columnOld + n < 8)
-                    {
-                        if (board2d[rowOld][columnOld + n].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index + n)
-                        }
-                        else if (board2d[rowOld][columnOld + n].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index + n)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (columnOld - n > -1)
-                    {
-                        if (board2d[rowOld][columnOld - n].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index - n)
-                        }
-                        else if (board2d[rowOld][columnOld - n].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index - n)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-            }
-            //Calculate Bishop Possible moves
-            else if (board1d[index].pieceType == PieceType.Bishop)
-            {
-                for (n in 1..7)
-                {
-                    if (rowOld + n < 8 && columnOld + n < 8)
-                    {
-                        if (board2d[rowOld + n][columnOld + n].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index + n * 9)
-                        }
-                        else if (board2d[rowOld + n][columnOld + n].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index + n * 9)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (rowOld - n > -1 && columnOld + n < 8)
-                    {
-                        if (board2d[rowOld - n][columnOld + n].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index - n * 7)
-                        }
-                        else if (board2d[rowOld - n][columnOld + n].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index - n * 7)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (rowOld + n < 8 && columnOld - n > -1)
-                    {
-                        if (board2d[rowOld + n][columnOld - n].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index + n * 7)
-                        }
-                        else if (board2d[rowOld + n][columnOld - n].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index + n * 7)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (rowOld - n > -1 && columnOld - n > -1)
-                    {
-                        if (board2d[rowOld - n][columnOld - n].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index - n * 9)
-                        }
-                        else if (board2d[rowOld - n][columnOld - n].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index - n * 9)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-            }
-            //Calculate Queen Posible moves
-            else if (board1d[index].pieceType == PieceType.Queen)
-            {
-                for (n in 1..7)
-                {
-                    if (rowOld + n < 8)
-                    {
-                        if (board2d[rowOld + n][columnOld].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index + n * 8)
-                        }
-                        else if (board2d[rowOld + n][columnOld].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index + n * 8)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (rowOld - n > -1)
-                    {
-                        if (board2d[rowOld - n][columnOld].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index - n * 8)
-                        }
-                        else if (board2d[rowOld - n][columnOld].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index - n * 8)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (columnOld + n < 8)
-                    {
-                        if (board2d[rowOld][columnOld + n].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index + n)
-                        }
-                        else if (board2d[rowOld][columnOld + n].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index + n)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (columnOld - n > -1)
-                    {
-                        if (board2d[rowOld][columnOld - n].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index - n)
-                        }
-                        else if (board2d[rowOld][columnOld - n].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index - n)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (rowOld + n < 8 && columnOld + n < 8)
-                    {
-                        if (board2d[rowOld + n][columnOld + n].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index + n * 9)
-                        }
-                        else if (board2d[rowOld + n][columnOld + n].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index + n * 9)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (rowOld - n > -1 && columnOld + n < 8)
-                    {
-                        if (board2d[rowOld - n][columnOld + n].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index - n * 7)
-                        }
-                        else if (board2d[rowOld - n][columnOld + n].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index - n * 7)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (rowOld + n < 8 && columnOld - n > -1)
-                    {
-                        if (board2d[rowOld + n][columnOld - n].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index + n * 7)
-                        }
-                        else if (board2d[rowOld + n][columnOld - n].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index + n * 7)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-                for (n in 1..7)
-                {
-                    if (rowOld - n > -1 && columnOld - n > -1)
-                    {
-                        if (board2d[rowOld - n][columnOld - n].pieceColor == PieceColor.Non)
-                        {
-                            possibleMoves.add(index - n * 9)
-                        }
-                        else if (board2d[rowOld - n][columnOld - n].pieceColor == oppositeColor)
-                        {
-                            possibleMoves.add(index - n * 9)
-                          break
-                      }
-                        else
-                        {
-                            break
-                      }
-                    }
-                    else
-                    {
-                        break
-                  }
-                }
-            }
-            return possibleMoves
-    }
 
 
             fun isValidMove(first: Int, second: Int):Boolean{
