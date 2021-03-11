@@ -1,10 +1,9 @@
 ﻿using UnityEngine.UI;
 using UnityEngine;
-using ChessLogic;
 
 namespace Assets.Classes
 {
-    class ChessButton
+    public class ChessButton
     {
         public Button Button;
         public Image Shape;

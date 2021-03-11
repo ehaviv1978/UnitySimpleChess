@@ -14,8 +14,8 @@ namespace ChessLogic
         List<ChessSquare[]> moveHistory = new List<ChessSquare[]>();
         int moveHistoryPointer = 0;
         public PieceColor turnColor = PieceColor.White;
-        List<int> whitePieces = new List<int>();
-        List<int> blackPieces = new List<int>();
+        public List<int> whitePieces = new List<int>();
+        public List<int> blackPieces = new List<int>();
 
         public ChessGame()
         {
@@ -84,7 +84,15 @@ namespace ChessLogic
 
         private void AddMoveToHistory()
         {
-            moveHistory.Add((ChessSquare[])board1d.Clone());
+            var tempBoard = new ChessSquare[64];
+            for (int i = 0; i < 64; i++)
+            {
+                tempBoard[i] = new ChessSquare();
+                tempBoard[i].enPassant = board1d[i].enPassant;
+                tempBoard[i].pieceColor = board1d[i].pieceColor;
+                tempBoard[i].pieceType = board1d[i].pieceType;
+            }
+            moveHistory.Add(tempBoard);
             moveHistoryPointer = moveHistory.Count - 1;
         }
 
@@ -163,7 +171,7 @@ namespace ChessLogic
         }
 
 
-        public void makeMove(int first, int second)
+        public void MakeMove(int first, int second)
         {
             SwitchTurnColor();
             if (board1d[first].pieceType == PieceType.Pawn && board1d[second].enPassant)
@@ -202,13 +210,13 @@ namespace ChessLogic
                 //Do Castling
                 if (second == first + 2)
                 {
-                    makeMove(second + 1, second - 1);
+                    MakeMove(second + 1, second - 1);
                     SwitchTurnColor();
                     return;
                 }
                 else if (second == first - 2)
                 {
-                    makeMove(second - 2, second + 1);
+                    MakeMove(second - 2, second + 1);
                     SwitchTurnColor();
                     return;
                 }
@@ -232,13 +240,19 @@ namespace ChessLogic
         }
 
 
-        public void moveBack()
+        public void MoveBack()
         {
             if (moveHistory.Count > 0 && moveHistoryPointer > 0)
             {
                 SwitchTurnColor();
                 moveHistoryPointer--;
-                board1d = (ChessSquare[])moveHistory[moveHistoryPointer].Clone();
+                //board1d = (ChessSquare[])moveHistory[moveHistoryPointer].Clone();
+                for (int i = 0; i < 64; i++)
+                {
+                    board1d[i].pieceColor = moveHistory[moveHistoryPointer][i].pieceColor;
+                    board1d[i].pieceType = moveHistory[moveHistoryPointer][i].pieceType;
+                    board1d[i].enPassant = moveHistory[moveHistoryPointer][i].enPassant;
+                }
                 Board1dToBoard2d();
                 FillPiecesArrays();
             }
@@ -251,7 +265,12 @@ namespace ChessLogic
             {
                 SwitchTurnColor();
                 moveHistoryPointer++;
-                board1d = (ChessSquare[])moveHistory[moveHistoryPointer].Clone();
+                for (int i = 0; i < 64; i++)
+                {
+                    board1d[i].pieceColor = moveHistory[moveHistoryPointer][i].pieceColor;
+                    board1d[i].pieceType = moveHistory[moveHistoryPointer][i].pieceType;
+                    board1d[i].enPassant = moveHistory[moveHistoryPointer][i].enPassant;
+                }
                 Board1dToBoard2d();
                 FillPiecesArrays();
             }
@@ -265,7 +284,7 @@ namespace ChessLogic
             {
                 foreach (var i in whitePieces)
                 {
-                    if (isValidMove(i, index))
+                    if (IsValidMove(i, index))
                     {
                         return true;
                     }
@@ -276,7 +295,7 @@ namespace ChessLogic
             {
                 foreach (var i in blackPieces)
                 {
-                    if (isValidMove(i, index))
+                    if (IsValidMove(i, index))
                     {
                         return true;
                     }
@@ -286,24 +305,23 @@ namespace ChessLogic
         }
 
 
-
-        public bool isDraw(PieceColor color)
+        public bool IsDraw(PieceColor color)
         {
             var tempHistory = moveHistory.Take(moveHistory.Count).ToList();
             if (color == PieceColor.Black)
             {
                 foreach (int piece in blackPieces.Take(blackPieces.Count).ToArray())
                 {
-                    foreach (int move in possibleMoves(piece))
+                    foreach (int move in PossibleMoves(piece))
                     {
-                        makeMove(piece, move);
-                        if (!isDoingCheck(PieceColor.White))
+                        MakeMove(piece, move);
+                        if (!IsDoingCheck(PieceColor.White))
                         {
-                            moveBack();
+                            MoveBack();
                             moveHistory = tempHistory.Take(tempHistory.Count).ToList();
                             return false;
                         }
-                        moveBack();
+                        MoveBack();
                     }
                 }
                 moveHistory = tempHistory.Take(tempHistory.Count).ToList();
@@ -313,16 +331,16 @@ namespace ChessLogic
             {
                 foreach (int piece in whitePieces.Take(whitePieces.Count).ToArray())
                 {
-                    foreach (int move in possibleMoves(piece))
+                    foreach (int move in PossibleMoves(piece))
                     {
-                        makeMove(piece, move);
-                        if (!isDoingCheck(PieceColor.Black))
+                        MakeMove(piece, move);
+                        if (!IsDoingCheck(PieceColor.Black))
                         {
-                            moveBack();
+                            MoveBack();
                             moveHistory = tempHistory.Take(tempHistory.Count).ToList();
                             return false;
                         }
-                        moveBack();
+                        MoveBack();
                     }
                 }
                 moveHistory = tempHistory.Take(tempHistory.Count).ToList();
@@ -331,14 +349,8 @@ namespace ChessLogic
         }
 
 
-        public bool isThreatened(int index, PieceColor color)
-        {
-            return true;
-        }
 
-
-
-        public bool isDoingCheck(PieceColor color)
+        public bool IsDoingCheck(PieceColor color)
         {
             if (color == PieceColor.Black)
             {
@@ -346,7 +358,7 @@ namespace ChessLogic
                 {
                     if (board1d[piece].pieceType == PieceType.King || board1d[piece].pieceType == PieceType.King0)
                     {
-                        return isThreatened(piece, PieceColor.Black);
+                        return IsThreatened(piece, PieceColor.Black);
                     }
                 }
             }
@@ -356,7 +368,7 @@ namespace ChessLogic
                 {
                     if (board1d[piece].pieceType == PieceType.King || board1d[piece].pieceType == PieceType.King0)
                     {
-                        return isThreatened(piece, PieceColor.White);
+                        return IsThreatened(piece, PieceColor.White);
                     }
                 }
             }
@@ -365,23 +377,23 @@ namespace ChessLogic
 
 
 
-        public bool isDoingCheckmate(PieceColor color)
+        public bool IsDoingCheckmate(PieceColor color)
         {
             var tempHistory = moveHistory.Take(moveHistory.Count).ToList();
             var pieces = (color == PieceColor.Black) ? whitePieces : blackPieces;
 
             foreach (int piece in pieces.Take(pieces.Count).ToArray())
             {
-                foreach (int move in possibleMoves(piece))
+                foreach (int move in PossibleMoves(piece))
                 {
-                    makeMove(piece, move);
-                    if (!isDoingCheck(color))
+                    MakeMove(piece, move);
+                    if (!IsDoingCheck(color))
                     {
-                        moveBack();
+                        MoveBack();
                         moveHistory = tempHistory.Take(tempHistory.Count).ToList();
                         return false;
                     }
-                    moveBack();
+                    MoveBack();
                 }
             }
             moveHistory = tempHistory.Take(tempHistory.Count).ToList();
@@ -389,8 +401,8 @@ namespace ChessLogic
         }
 
 
-        //return an array of legal moves for a given piece
-        public List<int> possibleMoves(int index)
+        //return an list of legal moves for a given piece
+        public List<int> PossibleMoves(int index)
         {
             var color = board1d[index].pieceColor;
             var oppositeColor = (color == PieceColor.White) ? PieceColor.Black : PieceColor.White;
@@ -725,9 +737,9 @@ namespace ChessLogic
                         board1d[index + 2].pieceType == PieceType.Non &&
                         board1d[index + 1].pieceType == PieceType.Non)
                     {
-                        if (!isThreatened(index, oppositeColor) &&
-                            !isThreatened(index + 2, oppositeColor) &&
-                            !isThreatened(index + 1, oppositeColor))
+                        if (!IsThreatened(index, oppositeColor) &&
+                            !IsThreatened(index + 2, oppositeColor) &&
+                            !IsThreatened(index + 1, oppositeColor))
                         {
                             if (board1d[index].pieceColor == PieceColor.White)
                             {
@@ -755,9 +767,9 @@ namespace ChessLogic
                         board1d[index - 2].pieceType == PieceType.Non &&
                         board1d[index - 1].pieceType == PieceType.Non)
                     {
-                        if (!isThreatened(index, oppositeColor) &&
-                            !isThreatened(index - 2, oppositeColor) &&
-                            !isThreatened(index - 1, oppositeColor))
+                        if (!IsThreatened(index, oppositeColor) &&
+                            !IsThreatened(index - 2, oppositeColor) &&
+                            !IsThreatened(index - 1, oppositeColor))
                         {
                             if (board1d[index].pieceColor == PieceColor.White)
                             {
@@ -847,7 +859,7 @@ namespace ChessLogic
 
 
 
-        public bool isValidMove(int first, int second)
+        public bool IsValidMove(int first, int second)
         {
             if (board1d[first].pieceColor == board1d[second].pieceColor)
             {
@@ -970,13 +982,13 @@ namespace ChessLogic
                     return true;
                 }
                 // check for castling
-                if (board1d[first].pieceType == PieceType.King0 && Math.Abs(first - second) == 2 && !isThreatened(first, oppositeColor))
+                if (board1d[first].pieceType == PieceType.King0 && Math.Abs(first - second) == 2 && !IsThreatened(first, oppositeColor))
                 {
                     if (second > first)
                     {
                         if (board1d[first + 3].pieceType == PieceType.Rock0 &&
-                            board1d[first + 1].pieceType == PieceType.Non && !isThreatened(first + 1, oppositeColor) &&
-                            board1d[first + 2].pieceType == PieceType.Non && !isThreatened(first + 2, oppositeColor))
+                            board1d[first + 1].pieceType == PieceType.Non && !IsThreatened(first + 1, oppositeColor) &&
+                            board1d[first + 2].pieceType == PieceType.Non && !IsThreatened(first + 2, oppositeColor))
                         {
                             if (color == PieceColor.White)
                             {
@@ -996,8 +1008,8 @@ namespace ChessLogic
                     else
                     {
                         if (board1d[first - 4].pieceType == PieceType.Rock0 &&
-                            board1d[first - 1].pieceType == PieceType.Non && !isThreatened(first - 1, oppositeColor) &&
-                            board1d[first - 2].pieceType == PieceType.Non && !isThreatened(first - 2, oppositeColor) &&
+                            board1d[first - 1].pieceType == PieceType.Non && !IsThreatened(first - 1, oppositeColor) &&
+                            board1d[first - 2].pieceType == PieceType.Non && !IsThreatened(first - 2, oppositeColor) &&
                             board1d[first - 3].pieceType == PieceType.Non)
                         {
                             if (color == PieceColor.White)
