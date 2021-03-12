@@ -9,7 +9,6 @@ namespace Assets.Classes
         public Image Shape;
         public Texture2D CursorShape;
         public int tempIndex = 0;
-        //public ChessPiece Piece;
 
         [SerializeField]
         private int m_index;

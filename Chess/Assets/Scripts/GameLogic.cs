@@ -42,6 +42,8 @@ public class GameLogic : MonoBehaviour
     [SerializeField] Texture2D CursorHand;
     [SerializeField] Image VsComputerCheck;
     [SerializeField] Text TextComputerLvl;
+    [SerializeField] Image AnimationPlane;
+    [SerializeField] Image ChessPieceAnimation;
     public ChessButton[] VisualBoard = new ChessButton[64];
     private ChessButton HandPiece;
     private ChessGame Game = new ChessGame();
@@ -49,7 +51,11 @@ public class GameLogic : MonoBehaviour
     private int[] possibleMoves;
     private bool vsComputer = true;
     public int computerLvl = 3;
+    public int maxComputerLvl = 4;
     Button[] allButtons;
+    private Vector3 oldPosition;
+    private Vector3 newPosition;
+    private bool animating = false;
 
 
     void Start()
@@ -69,6 +75,9 @@ public class GameLogic : MonoBehaviour
         NewGame();
         TextComputerLvl.text = computerLvl.ToString();
         AI.compLvl = computerLvl;
+        //ChessPieceAnimation.sprite = BlackKing;
+        //ChessPieceAnimation.transform.localPosition = new Vector3(40, 40, 0);
+        ChessPieceAnimation.enabled = false;
     }
 
 
@@ -315,6 +324,7 @@ public class GameLogic : MonoBehaviour
     IEnumerator ComputerTurn()
     {
         DisableAllButtons();
+        GameInfo.text = "Computer thinking...";
         ChessMove computerMove = new ChessMove();
         var thread = new Thread(() => {
             computerMove = AI.MakeMove();    
@@ -325,14 +335,37 @@ public class GameLogic : MonoBehaviour
         {
             yield return null;
         }
-        VisualBoard[computerMove.first].Button.image.color = Color.magenta;
-        VisualBoard[computerMove.last].Button.image.color = Color.magenta;
-        Wait();
+        //VisualBoard[computerMove.first].Button.image.color = Color.magenta;
+        //VisualBoard[computerMove.last].Button.image.color = Color.magenta;
+        oldPosition = new Vector3(((computerMove.first % 8) - 4) * 80 + 40, -(((computerMove.first / 8) - 4) * 80 + 40), 0);
+        newPosition = new Vector3(((computerMove.last % 8) - 4) * 80 + 40, -(((computerMove.last / 8) - 4) * 80 + 40), 0);
+        ChessPieceAnimation.transform.localPosition = oldPosition;
+        ChessPieceAnimation.sprite = VisualBoard[computerMove.first].Shape.sprite;
+        VisualBoard[computerMove.first].Shape.sprite = Empty;
+        ChessPieceAnimation.enabled = true;
+        animating = true;
     }
 
-    async void Wait()
+    private void Update()
     {
-        await Task.Delay(700);
+        if (animating)
+        {
+            float step = 400 * Time.deltaTime; // calculate distance to move
+            ChessPieceAnimation.transform.localPosition = Vector3.MoveTowards(ChessPieceAnimation.transform.localPosition, newPosition, step);
+
+            // Check if the position of the cube and sphere are approximately equal.
+            if (Vector3.Distance(ChessPieceAnimation.transform.localPosition, newPosition) < 0.001f)
+            {
+                // Swap the position of the cylinder.
+                animating=false;
+                ChessPieceAnimation.enabled = false;
+                CompliteComputerMove();
+            }
+        }    
+    }
+
+    void CompliteComputerMove()
+    {       
         DrawBoard();
         ClearHandPiece();
         EnableAllButtons();
@@ -411,6 +444,10 @@ public class GameLogic : MonoBehaviour
             but.Button.image.color = Color.clear;
         }
         ColorCheck();
+        if(vsComputer && Game.turnColor == PieceColor.Black)
+        {
+            GameInfo.text = "Press Play for computer to move.";
+        }
     }
 
     public void ForwardMove()
@@ -432,6 +469,10 @@ public class GameLogic : MonoBehaviour
             }
             GameInfo.text = Game.turnColor + " under Check.";
         }
+        if (vsComputer && Game.turnColor == PieceColor.Black)
+        {
+            GameInfo.text = "Press Play for computer to move.";
+        }
     }
 
     public void VsComputer()
@@ -445,13 +486,21 @@ public class GameLogic : MonoBehaviour
         }
     }
 
+    public void ComputerPlay()
+    {
+        if (vsComputer && Game.turnColor == PieceColor.Black && VisualBoard[0].Button.interactable)
+        {
+            StartCoroutine(ComputerTurn());
+        }
+    }
+
     public void LevelUp()
     {
-        if (computerLvl < 4)
+        if (computerLvl < maxComputerLvl)
         {
             computerLvl++;
             AI.compLvl = computerLvl;
-            TextComputerLvl.text = computerLvl.ToString();
+            TextComputerLvl.text = AI.compLvl.ToString();
         }
     }
 
@@ -461,7 +510,7 @@ public class GameLogic : MonoBehaviour
         {
             computerLvl--;
             AI.compLvl = computerLvl;
-            TextComputerLvl.text = computerLvl.ToString();
+            TextComputerLvl.text = AI.compLvl.ToString();
         }
     }
 }

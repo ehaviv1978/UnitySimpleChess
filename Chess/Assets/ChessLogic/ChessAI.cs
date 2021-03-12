@@ -1,24 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ChessLogic
 {
-
-    struct ChessMove
-    {
-
-        public int first;
-        public int last;
-        public ChessMove(int first, int last)
-        {
-            this.first = first;
-            this.last = last;
-        }
-    }
-
     class ChessAI
     {
         ChessGame game;
@@ -33,8 +19,6 @@ namespace ChessLogic
         }
 
         private List<int> piecesAI;
-        /*private List<int> piecesAI = new List<int>();
-        piecesAI = (colorAI == PieceColor.Black) ? game.blackPieces : game.whitePieces;*/
 
         public ChessMove MakeMove()
         {
@@ -63,7 +47,6 @@ namespace ChessLogic
                 }
             }
             if (bestIndex == 99) return computerMove;
-            //game.MakeMove(bestIndex, bestIndex2);
             computerMove.first = bestIndex;
             computerMove.last = bestIndex2;
             return computerMove;
@@ -174,7 +157,6 @@ namespace ChessLogic
             }
             return bestMoveScore;
         }
-
 
     }
 }
