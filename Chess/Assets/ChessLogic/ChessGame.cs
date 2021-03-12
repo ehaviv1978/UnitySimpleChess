@@ -246,7 +246,6 @@ namespace ChessLogic
             {
                 SwitchTurnColor();
                 moveHistoryPointer--;
-                //board1d = (ChessSquare[])moveHistory[moveHistoryPointer].Clone();
                 for (int i = 0; i < 64; i++)
                 {
                     board1d[i].pieceColor = moveHistory[moveHistoryPointer][i].pieceColor;

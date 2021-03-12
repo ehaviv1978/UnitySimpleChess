@@ -2,6 +2,7 @@
 using ChessLogic;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,14 +37,19 @@ public class GameLogic : MonoBehaviour
     [SerializeField] Texture2D CursorWhiteBishop;
     [SerializeField] Texture2D CursorWhiteKnight;
     [SerializeField] Texture2D CursorWhitePawn;
+    [SerializeField] Texture2D CursorHand;
     public ChessButton[] VisualBoard = new ChessButton[64];
     private ChessButton HandPiece;
     private ChessGame Game = new ChessGame();
+    private ChessAI AI;
     private int[] possibleMoves;
+    private bool vsComputer = true;
+    public int computerLvl = 3;
 
 
     void Start()
     {
+        AI = new ChessAI(Game, PieceColor.Black, computerLvl);
         for (int i = 0; i < 64; i++)
         {     
             var chessButton = Instantiate(chessButtonPrefub);
@@ -61,8 +67,7 @@ public class GameLogic : MonoBehaviour
 
     public void NewGame()
     {
-        Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
-
+        Cursor.SetCursor(CursorHand, new Vector2(10, 10), CursorMode.ForceSoftware);
         HandPiece = new ChessButton(chessButtonPrefub, 99);
         HandPiece.Shape = Shape;
         HandPiece.Shape.sprite = Empty;
@@ -167,14 +172,19 @@ public class GameLogic : MonoBehaviour
     }
 
 
-    void ButtonClicked(ChessButton button)
+    async void ButtonClicked(ChessButton button)
     {
         void PickPieceInHand()
         {
             possibleMoves = Game.PossibleMoves(button.index).ToArray();
             foreach (int index in possibleMoves)
             {
-                VisualBoard[index].Button.image.color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
+                if (Game.board1d[index].pieceColor != PieceColor.Non)
+                {
+                    VisualBoard[index].Button.image.color = new Color(1f, 0f, 0f, 0.4f);
+                    continue;
+                }
+                VisualBoard[index].Button.image.color = new Color(0f, 1f, 0f, 0.4f);
             }
             button.Button.image.color = new Color(0, 0, 1, 0.6f);
             Cursor.SetCursor(button.CursorShape, new Vector2(20, 30), CursorMode.ForceSoftware);
@@ -232,7 +242,7 @@ public class GameLogic : MonoBehaviour
                     GameInfo.text = "Invalid Move";
                     return;
                 }
-                else if (Game.IsDoingCheck(Game.OtherColor(Game.turnColor)))
+                if (Game.IsDoingCheck(Game.OtherColor(Game.turnColor)))
                 {
                     ClearHandPiece();
                     ColorCheck();
@@ -242,10 +252,26 @@ public class GameLogic : MonoBehaviour
                 }
                 DrawBoard();
                 ClearHandPiece();
+                if (vsComputer)
+                {
+                    await Task.Delay(1);
+                    ComputerTurn();
+                }
             }
         }
     }
-   
+
+
+    private async void ComputerTurn()
+    {
+        var computerMove = AI.MakeMove();
+        Game.MakeMove(computerMove.first, computerMove.last);
+        VisualBoard[computerMove.first].Button.image.color = Color.magenta;
+        VisualBoard[computerMove.last].Button.image.color = Color.magenta;
+        await Task.Delay(700);
+        DrawBoard();
+        ClearHandPiece();
+    }
 
     void ClearHandPiece()
     {
@@ -253,7 +279,7 @@ public class GameLogic : MonoBehaviour
         {
             but.Button.image.color = Color.clear;
         }
-        Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
+        Cursor.SetCursor(CursorHand, new Vector2(10, 10), CursorMode.ForceSoftware);
         HandPiece.Shape.sprite = Empty;
         HandPiece.CursorShape = null;
     }
@@ -283,11 +309,15 @@ public class GameLogic : MonoBehaviour
             Cursor.SetCursor(HandPiece.CursorShape, new Vector2(20, 30), CursorMode.ForceSoftware);
             VisualBoard[HandPiece.tempIndex].Shape.sprite = Empty;
         }
+        else
+        {
+            Cursor.SetCursor(CursorHand, new Vector2(10,10), CursorMode.ForceSoftware);
+        }
     }
 
     public void CursorOutOfBoard()
     {
-        Cursor.SetCursor(null, new Vector2(0, 0), CursorMode.Auto);
+        Cursor.SetCursor(CursorHand, new Vector2(10, 10), CursorMode.ForceSoftware);
         if (HandPiece.CursorShape != null)
         {
             VisualBoard[HandPiece.tempIndex].Shape.sprite = HandPiece.Shape.sprite;
@@ -298,11 +328,21 @@ public class GameLogic : MonoBehaviour
     {
         Game.MoveBack();
         DrawBoard();
+        foreach (var but in VisualBoard)
+        {
+            but.Button.image.color = Color.clear;
+        }
+        ColorCheck();
     }
 
     public void ForwardMove()
     {
         Game.MoveForward();
         DrawBoard();
+        foreach (var but in VisualBoard)
+        {
+            but.Button.image.color = Color.clear;
+        }
+        ColorCheck();
     }
 }
