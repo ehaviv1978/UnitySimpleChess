@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 5779929028252863967}
   - component: {fileID: 5779929028252863966}
   - component: {fileID: 3544874244150655638}
-  - component: {fileID: -8513009278779282174}
   m_Layer: 5
   m_Name: ChessButton
   m_TagString: Untagged
@@ -137,7 +136,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: -8513009278779282174}
+        - m_Target: {fileID: 0}
           m_MethodName: MouseIn
           m_Mode: 1
           m_Arguments:
@@ -152,7 +151,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: -8513009278779282174}
+        - m_Target: {fileID: 0}
           m_MethodName: MouseOut
           m_Mode: 1
           m_Arguments:
@@ -163,15 +162,3 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
---- !u!114 &-8513009278779282174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5779929028252863964}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a16e4f7a15737345b12cb9c28ed3a5a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

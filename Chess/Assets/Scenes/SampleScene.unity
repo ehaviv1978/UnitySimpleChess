@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 5680989}
   - component: {fileID: 5680988}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: CanvasPlayTable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1225,7 +1225,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2041544640}
   - component: {fileID: 2041544639}
-  - component: {fileID: 2041544641}
   m_Layer: 0
   m_Name: GameLogic
   m_TagString: Untagged
@@ -1276,6 +1275,7 @@ MonoBehaviour:
   CursorWhiteKnight: {fileID: 2800000, guid: e2650bcda00856143a7285546515d447, type: 3}
   CursorWhitePawn: {fileID: 2800000, guid: 9575d5d0de7f19f47898e74e6193762c, type: 3}
   CursorHand: {fileID: 2800000, guid: 748bfcd8c567f174c8b50e0851708f64, type: 3}
+  computerLvl: 3
 --- !u!4 &2041544640
 Transform:
   m_ObjectHideFlags: 0
@@ -1290,15 +1290,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2041544641
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2041544638}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a16e4f7a15737345b12cb9c28ed3a5a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

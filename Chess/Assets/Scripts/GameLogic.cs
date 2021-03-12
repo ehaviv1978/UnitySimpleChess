@@ -1,7 +1,9 @@
 ﻿using Assets.Classes;
 using ChessLogic;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,7 +46,8 @@ public class GameLogic : MonoBehaviour
     private ChessAI AI;
     private int[] possibleMoves;
     private bool vsComputer = true;
-    public int computerLvl = 3;
+    public int computerLvl = 4;
+    Button[] allButtons;
 
 
     void Start()
@@ -60,10 +63,26 @@ public class GameLogic : MonoBehaviour
             VisualBoard[i].Shape = Instantiate(Shape);
             VisualBoard[i].Shape.transform.SetParent(VisualBoard[i].Button.transform);
         }
-
+        allButtons = GameObject.FindObjectsOfType<Button>();
         NewGame();
     }
 
+
+    void DisableAllButtons()
+    {
+        foreach(var button in allButtons)
+        {
+            button.interactable = false;
+        }
+    }
+
+    void EnableAllButtons()
+    {
+        foreach (var button in allButtons)
+        {
+            button.interactable = true;
+        }
+    }
 
     public void NewGame()
     {
@@ -172,7 +191,7 @@ public class GameLogic : MonoBehaviour
     }
 
 
-    async void ButtonClicked(ChessButton button)
+    void ButtonClicked(ChessButton button)
     {
         void PickPieceInHand()
         {
@@ -247,30 +266,72 @@ public class GameLogic : MonoBehaviour
                     ClearHandPiece();
                     ColorCheck();
                     DrawBoard();
+                    if (Game.IsDoingCheckmate(Game.OtherColor(Game.turnColor)))
+                    {
+                        DisableBoard();
+                        GameInfo.text = "Checkmate!!! " + Game.OtherColor(Game.turnColor) + " Won!!";
+                        return;
+                    }
                     GameInfo.text = Game.turnColor + " under Check.";
+                    if (vsComputer)
+                    {
+                        StartCoroutine(ComputerTurn());
+                    }
                     return;
                 }
                 DrawBoard();
                 ClearHandPiece();
                 if (vsComputer)
                 {
-                    await Task.Delay(1);
-                    ComputerTurn();
+                    StartCoroutine(ComputerTurn());
                 }
             }
         }
     }
 
 
-    private async void ComputerTurn()
+    void DisableBoard()
     {
-        var computerMove = AI.MakeMove();
-        Game.MakeMove(computerMove.first, computerMove.last);
+        foreach(var button in VisualBoard)
+        {
+            button.Button.interactable = false;
+        }
+    }
+
+
+    void EnableleBoard()
+    {
+        foreach (var button in VisualBoard)
+        {
+            button.Button.interactable = true;
+        }
+    }
+
+
+    IEnumerator ComputerTurn()
+    {
+        DisableAllButtons();
+        ChessMove computerMove = new ChessMove();
+        var thread = new Thread(() => {
+            computerMove = AI.MakeMove();    
+            Game.MakeMove(computerMove.first, computerMove.last);
+        });
+        thread.Start();
+        while (thread.IsAlive)
+        {
+            yield return null;
+        }
         VisualBoard[computerMove.first].Button.image.color = Color.magenta;
         VisualBoard[computerMove.last].Button.image.color = Color.magenta;
+        Wait();
+    }
+
+    async void Wait()
+    {
         await Task.Delay(700);
         DrawBoard();
         ClearHandPiece();
+        EnableAllButtons();
     }
 
     void ClearHandPiece()
@@ -326,6 +387,7 @@ public class GameLogic : MonoBehaviour
 
     public void BackMove()
     {
+        EnableleBoard();
         Game.MoveBack();
         DrawBoard();
         foreach (var but in VisualBoard)
@@ -344,5 +406,15 @@ public class GameLogic : MonoBehaviour
             but.Button.image.color = Color.clear;
         }
         ColorCheck();
+        if (Game.IsDoingCheck(Game.OtherColor(Game.turnColor)))
+        {
+            if (Game.IsDoingCheckmate(Game.OtherColor(Game.turnColor)))
+            {
+                DisableBoard();
+                GameInfo.text = "Checkmate!!! " + Game.OtherColor(Game.turnColor) + " Won!!";
+                return;
+            }
+            GameInfo.text = Game.turnColor + " under Check.";
+        }
     }
 }
