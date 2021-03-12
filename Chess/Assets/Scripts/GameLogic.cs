@@ -40,13 +40,15 @@ public class GameLogic : MonoBehaviour
     [SerializeField] Texture2D CursorWhiteKnight;
     [SerializeField] Texture2D CursorWhitePawn;
     [SerializeField] Texture2D CursorHand;
+    [SerializeField] Image VsComputerCheck;
+    [SerializeField] Text TextComputerLvl;
     public ChessButton[] VisualBoard = new ChessButton[64];
     private ChessButton HandPiece;
     private ChessGame Game = new ChessGame();
     private ChessAI AI;
     private int[] possibleMoves;
     private bool vsComputer = true;
-    public int computerLvl = 4;
+    public int computerLvl = 3;
     Button[] allButtons;
 
 
@@ -65,6 +67,8 @@ public class GameLogic : MonoBehaviour
         }
         allButtons = GameObject.FindObjectsOfType<Button>();
         NewGame();
+        TextComputerLvl.text = computerLvl.ToString();
+        AI.compLvl = computerLvl;
     }
 
 
@@ -203,7 +207,7 @@ public class GameLogic : MonoBehaviour
                     VisualBoard[index].Button.image.color = new Color(1f, 0f, 0f, 0.4f);
                     continue;
                 }
-                VisualBoard[index].Button.image.color = new Color(0f, 1f, 0f, 0.4f);
+                VisualBoard[index].Button.image.color = new Color(0f, 1f, 1f, 0.4f);
             }
             button.Button.image.color = new Color(0, 0, 1, 0.6f);
             Cursor.SetCursor(button.CursorShape, new Vector2(20, 30), CursorMode.ForceSoftware);
@@ -332,6 +336,18 @@ public class GameLogic : MonoBehaviour
         DrawBoard();
         ClearHandPiece();
         EnableAllButtons();
+        if (Game.IsDoingCheck(PieceColor.Black))
+        {
+            if (Game.IsDoingCheckmate(PieceColor.Black))
+            {
+                ColorCheck();
+                DisableBoard();
+                GameInfo.text = "Checkmate!!! Computer Won!";
+                return;
+            }
+            ColorCheck();
+            GameInfo.text = "Computer Check!";
+        }
     }
 
     void ClearHandPiece()
@@ -415,6 +431,37 @@ public class GameLogic : MonoBehaviour
                 return;
             }
             GameInfo.text = Game.turnColor + " under Check.";
+        }
+    }
+
+    public void VsComputer()
+    {
+        vsComputer = !vsComputer;
+        VsComputerCheck.enabled = !VsComputerCheck.enabled;
+        
+        if(vsComputer && Game.turnColor == PieceColor.Black && VisualBoard[0].Button.interactable)
+        {
+            StartCoroutine(ComputerTurn());
+        }
+    }
+
+    public void LevelUp()
+    {
+        if (computerLvl < 4)
+        {
+            computerLvl++;
+            AI.compLvl = computerLvl;
+            TextComputerLvl.text = computerLvl.ToString();
+        }
+    }
+
+    public void LevelDown()
+    {
+        if (computerLvl > 1)
+        {
+            computerLvl--;
+            AI.compLvl = computerLvl;
+            TextComputerLvl.text = computerLvl.ToString();
         }
     }
 }
