@@ -1,10 +1,10 @@
 ﻿using Assets.Classes;
 using ChessLogic;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -44,6 +44,7 @@ public class GameLogic : MonoBehaviour
     [SerializeField] Text TextComputerLvl;
     [SerializeField] Image AnimationPlane;
     [SerializeField] Image ChessPieceAnimation;
+    [SerializeField] Text TextSoundButton;
     public ChessButton[] VisualBoard = new ChessButton[64];
     private ChessButton HandPiece;
     private ChessGame Game = new ChessGame();
@@ -56,6 +57,7 @@ public class GameLogic : MonoBehaviour
     private Vector3 oldPosition;
     private Vector3 newPosition;
     private bool animating = false;
+    private bool playSounds = true;
 
 
     void Start()
@@ -323,11 +325,16 @@ public class GameLogic : MonoBehaviour
 
     IEnumerator ComputerTurn()
     {
+        bool computerCapture = false;
         DisableAllButtons();
         GameInfo.text = "Computer thinking...";
         ChessMove computerMove = new ChessMove();
         var thread = new Thread(() => {
-            computerMove = AI.MakeMove();    
+            computerMove = AI.MakeMove();
+            if (Game.board1d[computerMove.last].pieceColor != PieceColor.Non)
+            {
+                computerCapture = true;
+            }
             Game.MakeMove(computerMove.first, computerMove.last);
         });
         thread.Start();
@@ -335,8 +342,10 @@ public class GameLogic : MonoBehaviour
         {
             yield return null;
         }
-        //VisualBoard[computerMove.first].Button.image.color = Color.magenta;
-        //VisualBoard[computerMove.last].Button.image.color = Color.magenta;
+        if (computerCapture)
+        {
+            VisualBoard[computerMove.last].Button.image.color = Color.red;
+        }
         oldPosition = new Vector3(((computerMove.first % 8) - 4) * 80 + 40, -(((computerMove.first / 8) - 4) * 80 + 40), 0);
         newPosition = new Vector3(((computerMove.last % 8) - 4) * 80 + 40, -(((computerMove.last / 8) - 4) * 80 + 40), 0);
         ChessPieceAnimation.transform.localPosition = oldPosition;
@@ -350,13 +359,11 @@ public class GameLogic : MonoBehaviour
     {
         if (animating)
         {
-            float step = 400 * Time.deltaTime; // calculate distance to move
+            float step = 400 * Time.deltaTime; // calculate distance to move based on computer framerate
             ChessPieceAnimation.transform.localPosition = Vector3.MoveTowards(ChessPieceAnimation.transform.localPosition, newPosition, step);
 
-            // Check if the position of the cube and sphere are approximately equal.
             if (Vector3.Distance(ChessPieceAnimation.transform.localPosition, newPosition) < 0.001f)
             {
-                // Swap the position of the cylinder.
                 animating=false;
                 ChessPieceAnimation.enabled = false;
                 CompliteComputerMove();
@@ -511,6 +518,44 @@ public class GameLogic : MonoBehaviour
             computerLvl--;
             AI.compLvl = computerLvl;
             TextComputerLvl.text = AI.compLvl.ToString();
+        }
+    }
+
+    public void SaveGame()
+    {
+        var gameToSave = new SavedChessGame(Game.turnColor, Game.moveHistory);
+        string json = JsonConvert.SerializeObject(gameToSave, Formatting.Indented);
+        File.WriteAllText("Assets/Resources/SavedGames/eran.json", json);
+    }
+
+    public void LoadGame()
+    {
+        string json = File.ReadAllText("Assets/Resources/SavedGames/eran.json");
+        var gameSaved = JsonConvert.DeserializeObject<SavedChessGame>(json);    
+        
+        Game.moveHistory = gameSaved.moveHistory;
+        Game.moveHistoryPointer = Game.moveHistory.Count;
+        Game.MoveBack();
+        Game.turnColor = gameSaved.turn;
+        DrawBoard();
+        ClearHandPiece();
+        ColorCheck();
+        if (gameSaved.turn == PieceColor.Black && vsComputer)
+        {
+            GameInfo.text = "Press play for computer to move.";
+        }
+    }
+
+    public void SoundOnOff()
+    {
+        playSounds = !playSounds;
+        if (playSounds)
+        {
+            TextSoundButton.text = "Turn Sound OFF";
+        }
+        else
+        {
+            TextSoundButton.text = "Turn Sound ON";
         }
     }
 }

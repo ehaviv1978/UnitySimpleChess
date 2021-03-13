@@ -10,8 +10,8 @@ namespace ChessLogic
         public ChessSquare[] board1d = new ChessSquare[64];
         ChessSquare[,] board2d = new ChessSquare[8, 8];
 
-        List<ChessSquare[]> moveHistory = new List<ChessSquare[]>();
-        int moveHistoryPointer = 0;
+        public List<ChessSquare[]> moveHistory = new List<ChessSquare[]>();
+        public int moveHistoryPointer = 0;
         public PieceColor turnColor = PieceColor.White;
         public List<int> whitePieces = new List<int>();
         public List<int> blackPieces = new List<int>();
