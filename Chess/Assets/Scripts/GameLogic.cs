@@ -57,7 +57,7 @@ public class GameLogic : MonoBehaviour
     private Vector3 oldPosition;
     private Vector3 newPosition;
     private bool animating = false;
-    private bool playSounds = true;
+    private bool playSounds = false;
 
 
     void Start()
@@ -75,10 +75,9 @@ public class GameLogic : MonoBehaviour
         }
         allButtons = GameObject.FindObjectsOfType<Button>();
         NewGame();
+        playSounds = true;
         TextComputerLvl.text = computerLvl.ToString();
         AI.compLvl = computerLvl;
-        //ChessPieceAnimation.sprite = BlackKing;
-        //ChessPieceAnimation.transform.localPosition = new Vector3(40, 40, 0);
         ChessPieceAnimation.enabled = false;
     }
 
@@ -101,6 +100,8 @@ public class GameLogic : MonoBehaviour
 
     public void NewGame()
     {
+        Game.turnColor = PieceColor.White;
+        if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.click);
         Cursor.SetCursor(CursorHand, new Vector2(10, 10), CursorMode.ForceSoftware);
         HandPiece = new ChessButton(chessButtonPrefub, 99);
         HandPiece.Shape = Shape;
@@ -250,6 +251,7 @@ public class GameLogic : MonoBehaviour
         {
             if (button.index == HandPiece.tempIndex)
             {
+                if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.pieceMove);
                 button.Shape.sprite = HandPiece.Shape.sprite;
                 ClearHandPiece();
                 ColorCheck();
@@ -257,6 +259,7 @@ public class GameLogic : MonoBehaviour
             }
             else if (Game.board1d[button.index].pieceColor == Game.board1d[HandPiece.tempIndex].pieceColor)
             {
+                if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.pieceMove);
                 ClearHandPiece();
                 DrawBoard();
                 PickPieceInHand();
@@ -273,9 +276,11 @@ public class GameLogic : MonoBehaviour
                     Game.MoveBack();
                     DrawBoard();
                     ColorCheck();
+                    if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.error);
                     GameInfo.text = "Invalid Move";
                     return;
                 }
+                if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.pieceMove);
                 if (Game.IsDoingCheck(Game.OtherColor(Game.turnColor)))
                 {
                     ClearHandPiece();
@@ -284,9 +289,11 @@ public class GameLogic : MonoBehaviour
                     if (Game.IsDoingCheckmate(Game.OtherColor(Game.turnColor)))
                     {
                         DisableBoard();
+                        if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.win);
                         GameInfo.text = "Checkmate!!! " + Game.OtherColor(Game.turnColor) + " Won!!";
                         return;
                     }
+                    if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.check);
                     GameInfo.text = Game.turnColor + " under Check.";
                     if (vsComputer)
                     {
@@ -300,6 +307,11 @@ public class GameLogic : MonoBehaviour
                 {
                     StartCoroutine(ComputerTurn());
                 }
+            }
+            else if (!Array.Exists(possibleMoves, element => element == button.index))
+            {
+                if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.error);
+                GameInfo.text = "Invalid Move.";
             }
         }
     }
@@ -372,7 +384,8 @@ public class GameLogic : MonoBehaviour
     }
 
     void CompliteComputerMove()
-    {       
+    {
+        if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.pieceMove);
         DrawBoard();
         ClearHandPiece();
         EnableAllButtons();
@@ -382,10 +395,12 @@ public class GameLogic : MonoBehaviour
             {
                 ColorCheck();
                 DisableBoard();
+                if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.lose);
                 GameInfo.text = "Checkmate!!! Computer Won!";
                 return;
             }
             ColorCheck();
+            if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.check);
             GameInfo.text = "Computer Check!";
         }
     }
@@ -443,6 +458,9 @@ public class GameLogic : MonoBehaviour
 
     public void BackMove()
     {
+        if (Game.moveHistoryPointer == 0) return;
+
+        if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.softClick);
         EnableleBoard();
         Game.MoveBack();
         DrawBoard();
@@ -451,7 +469,17 @@ public class GameLogic : MonoBehaviour
             but.Button.image.color = Color.clear;
         }
         ColorCheck();
-        if(vsComputer && Game.turnColor == PieceColor.Black)
+        if (Game.IsDoingCheck(Game.OtherColor(Game.turnColor)))
+        {
+            if (Game.IsDoingCheckmate(Game.OtherColor(Game.turnColor)))
+            {
+                DisableBoard();
+                GameInfo.text = "Checkmate!!! " + Game.OtherColor(Game.turnColor) + " Won!!";
+                return;
+            }
+            GameInfo.text = Game.turnColor + " under Check.";
+        }
+        if (vsComputer && Game.turnColor == PieceColor.Black)
         {
             GameInfo.text = "Press Play for computer to move.";
         }
@@ -459,6 +487,9 @@ public class GameLogic : MonoBehaviour
 
     public void ForwardMove()
     {
+        if (Game.moveHistoryPointer +1 == Game.moveHistory.Count) return;
+
+        if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.softClick);
         Game.MoveForward();
         DrawBoard();
         foreach (var but in VisualBoard)
@@ -484,6 +515,7 @@ public class GameLogic : MonoBehaviour
 
     public void VsComputer()
     {
+        if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.click);
         vsComputer = !vsComputer;
         VsComputerCheck.enabled = !VsComputerCheck.enabled;
         
@@ -497,6 +529,7 @@ public class GameLogic : MonoBehaviour
     {
         if (vsComputer && Game.turnColor == PieceColor.Black && VisualBoard[0].Button.interactable)
         {
+            if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.softClick);
             StartCoroutine(ComputerTurn());
         }
     }
@@ -505,6 +538,7 @@ public class GameLogic : MonoBehaviour
     {
         if (computerLvl < maxComputerLvl)
         {
+            if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.softClick);
             computerLvl++;
             AI.compLvl = computerLvl;
             TextComputerLvl.text = AI.compLvl.ToString();
@@ -515,6 +549,7 @@ public class GameLogic : MonoBehaviour
     {
         if (computerLvl > 1)
         {
+            if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.softClick);
             computerLvl--;
             AI.compLvl = computerLvl;
             TextComputerLvl.text = AI.compLvl.ToString();
@@ -523,15 +558,34 @@ public class GameLogic : MonoBehaviour
 
     public void SaveGame()
     {
-        var gameToSave = new SavedChessGame(Game.turnColor, Game.moveHistory);
-        string json = JsonConvert.SerializeObject(gameToSave, Formatting.Indented);
-        File.WriteAllText("Assets/Resources/SavedGames/eran.json", json);
+        if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.click);
+        try
+        {
+            var gameToSave = new SavedChessGame(Game.turnColor, Game.moveHistory);
+            string json = JsonConvert.SerializeObject(gameToSave, Formatting.Indented);
+            File.WriteAllText("Assets/Resources/SavedGames/saved_game.json", json);
+        }
+        catch
+        {
+            GameInfo.text = "Error saving game.";
+            return;
+        }
     }
 
     public void LoadGame()
     {
-        string json = File.ReadAllText("Assets/Resources/SavedGames/eran.json");
-        var gameSaved = JsonConvert.DeserializeObject<SavedChessGame>(json);    
+        SavedChessGame gameSaved;
+        if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.click);
+        try
+        {
+            string json = File.ReadAllText("Assets/Resources/SavedGames/saved_game.json");
+            gameSaved = JsonConvert.DeserializeObject<SavedChessGame>(json);    
+        }
+        catch
+        {
+            GameInfo.text = "Error loading game.";
+            return;
+        }
         
         Game.moveHistory = gameSaved.moveHistory;
         Game.moveHistoryPointer = Game.moveHistory.Count;
@@ -551,6 +605,7 @@ public class GameLogic : MonoBehaviour
         playSounds = !playSounds;
         if (playSounds)
         {
+            SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.click);
             TextSoundButton.text = "Turn Sound OFF";
         }
         else

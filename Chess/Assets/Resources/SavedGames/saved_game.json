@@ -1,5 +1,5 @@
 {
-  "turn": 0,
+  "turn": 1,
   "moveHistory": [
     [
       {
@@ -505,6 +505,11 @@
         "enPassant": false
       },
       {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
         "pieceType": 7,
         "pieceColor": 1,
         "enPassant": false
@@ -560,38 +565,33 @@
         "enPassant": false
       },
       {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
         "pieceType": 8,
         "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
         "enPassant": false
       },
       {
@@ -707,11 +707,6 @@
         "enPassant": false
       },
       {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
         "pieceType": 7,
         "pieceColor": 0,
         "enPassant": false
@@ -730,26 +725,6 @@
         "pieceType": 8,
         "pieceColor": 2,
         "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": true
       },
       {
         "pieceType": 8,
@@ -827,6 +802,36 @@
         "enPassant": false
       },
       {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
         "pieceType": 7,
         "pieceColor": 1,
         "enPassant": false
@@ -882,38 +887,33 @@
         "enPassant": false
       },
       {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
         "pieceType": 8,
         "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
         "enPassant": false
       },
       {
@@ -1029,11 +1029,6 @@
         "enPassant": false
       },
       {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
         "pieceType": 7,
         "pieceColor": 0,
         "enPassant": false
@@ -1089,28 +1084,33 @@
         "enPassant": false
       },
       {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
         "pieceType": 7,
         "pieceColor": 0,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
         "enPassant": false
       },
       {
@@ -1149,13 +1149,13 @@
         "enPassant": false
       },
       {
-        "pieceType": 7,
-        "pieceColor": 1,
+        "pieceType": 8,
+        "pieceColor": 2,
         "enPassant": false
       },
       {
-        "pieceType": 8,
-        "pieceColor": 2,
+        "pieceType": 7,
+        "pieceColor": 1,
         "enPassant": false
       },
       {
@@ -1229,13 +1229,13 @@
         "enPassant": false
       },
       {
-        "pieceType": 8,
-        "pieceColor": 2,
+        "pieceType": 7,
+        "pieceColor": 1,
         "enPassant": false
       },
       {
-        "pieceType": 7,
-        "pieceColor": 1,
+        "pieceType": 8,
+        "pieceColor": 2,
         "enPassant": false
       },
       {
@@ -1311,330 +1311,8 @@
         "enPassant": false
       },
       {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 3,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 4,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 6,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 0,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 6,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 4,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 3,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 2,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
         "pieceType": 1,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 3,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 4,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 6,
-        "pieceColor": 1,
-        "enPassant": false
-      }
-    ],
-    [
-      {
-        "pieceType": 6,
         "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 4,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 3,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 2,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
         "enPassant": false
       },
       {
@@ -1673,11 +1351,6 @@
         "enPassant": false
       },
       {
-        "pieceType": 0,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
         "pieceType": 7,
         "pieceColor": 0,
         "enPassant": false
@@ -1688,128 +1361,8 @@
         "enPassant": false
       },
       {
-        "pieceType": 7,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
         "pieceType": 8,
         "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 0,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
-        "enPassant": false
-      },
-      {
-        "pieceType": 7,
-        "pieceColor": 1,
         "enPassant": false
       },
       {
@@ -1854,6 +1407,131 @@
       },
       {
         "pieceType": 7,
+        "pieceColor": 0,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 7,
+        "pieceColor": 0,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 8,
+        "pieceColor": 2,
+        "enPassant": false
+      },
+      {
+        "pieceType": 7,
         "pieceColor": 1,
         "enPassant": false
       },
@@ -1873,6 +1551,11 @@
         "enPassant": false
       },
       {
+        "pieceType": 7,
+        "pieceColor": 1,
+        "enPassant": false
+      },
+      {
         "pieceType": 8,
         "pieceColor": 2,
         "enPassant": false
@@ -1885,11 +1568,6 @@
       {
         "pieceType": 7,
         "pieceColor": 1,
-        "enPassant": false
-      },
-      {
-        "pieceType": 8,
-        "pieceColor": 2,
         "enPassant": false
       },
       {
