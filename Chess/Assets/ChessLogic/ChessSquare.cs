@@ -1,6 +1,7 @@
 ﻿
 namespace ChessLogic
 {
+    [System.Serializable]
     class ChessSquare
     {
         public PieceType pieceType = PieceType.Non;

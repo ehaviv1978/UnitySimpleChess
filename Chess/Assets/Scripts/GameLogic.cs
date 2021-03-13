@@ -559,11 +559,12 @@ public class GameLogic : MonoBehaviour
     public void SaveGame()
     {
         if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.click);
+
         try
         {
             var gameToSave = new SavedChessGame(Game.turnColor, Game.moveHistory);
             string json = JsonConvert.SerializeObject(gameToSave, Formatting.Indented);
-            File.WriteAllText("Assets/Resources/SavedGames/saved_game.json", json);
+            File.WriteAllText(Application.persistentDataPath + "/saved_game.json", json);
         }
         catch
         {
@@ -578,15 +579,16 @@ public class GameLogic : MonoBehaviour
         if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.click);
         try
         {
-            string json = File.ReadAllText("Assets/Resources/SavedGames/saved_game.json");
-            gameSaved = JsonConvert.DeserializeObject<SavedChessGame>(json);    
+            string json = File.ReadAllText(Application.persistentDataPath + "/saved_game.json");
+            gameSaved = JsonConvert.DeserializeObject<SavedChessGame>(json);
+            GameInfo.text = json; 
         }
         catch
         {
             GameInfo.text = "Error loading game.";
             return;
         }
-        
+
         Game.moveHistory = gameSaved.moveHistory;
         Game.moveHistoryPointer = Game.moveHistory.Count;
         Game.MoveBack();

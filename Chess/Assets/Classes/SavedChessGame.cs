@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Assets.Classes
 {
+    [System.Serializable]
     class SavedChessGame
     {
         public PieceColor turn;

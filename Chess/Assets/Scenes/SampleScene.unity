@@ -529,6 +529,7 @@ MonoBehaviour:
   win: {fileID: 8300000, guid: 686aa8bd878012e49b018a4181c3a073, type: 3}
   lose: {fileID: 8300000, guid: b10fdc675049e3c46889ca697d25bd3a, type: 3}
   error: {fileID: 8300000, guid: c6515cb9a365abe45af103fdead4ec1b, type: 3}
+  check: {fileID: 8300000, guid: 088ed88af37c3c94dae179b03f569b46, type: 3}
 --- !u!4 &136067696
 Transform:
   m_ObjectHideFlags: 0
