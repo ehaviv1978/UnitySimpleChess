@@ -100,7 +100,6 @@ public class GameLogic : MonoBehaviour
 
     public void NewGame()
     {
-        Game.turnColor = PieceColor.White;
         if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.click);
         Cursor.SetCursor(CursorHand, new Vector2(10, 10), CursorMode.ForceSoftware);
         HandPiece = new ChessButton(chessButtonPrefub, 99);
@@ -113,6 +112,7 @@ public class GameLogic : MonoBehaviour
 
         Game.NewBoard();
         DrawBoard();
+        EnableleBoard();
 
         GameInfo.text = "White move first";
     }
@@ -295,15 +295,20 @@ public class GameLogic : MonoBehaviour
                     }
                     if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.check);
                     GameInfo.text = Game.turnColor + " under Check.";
-                    if (vsComputer)
+                    if (vsComputer && Game.turnColor == PieceColor.Black)
                     {
                         StartCoroutine(ComputerTurn());
                     }
                     return;
                 }
+                else if (Game.IsDraw(Game.turnColor))
+                {
+                    Draw();
+                    return;
+                }
                 DrawBoard();
                 ClearHandPiece();
-                if (vsComputer)
+                if (vsComputer && Game.turnColor== PieceColor.Black)
                 {
                     StartCoroutine(ComputerTurn());
                 }
@@ -383,6 +388,18 @@ public class GameLogic : MonoBehaviour
         }    
     }
 
+
+    private void Draw()
+    {
+        ClearHandPiece();
+        DrawBoard();
+        ColorCheck();
+        DisableBoard();
+        if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.lose);
+        GameInfo.text = "Draw!";
+    }
+
+
     void CompliteComputerMove()
     {
         if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.pieceMove);
@@ -402,6 +419,10 @@ public class GameLogic : MonoBehaviour
             ColorCheck();
             if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.check);
             GameInfo.text = "Computer Check!";
+        }
+        else if (Game.IsDraw(PieceColor.White))
+        {
+            Draw();
         }
     }
 

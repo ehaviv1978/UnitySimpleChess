@@ -303,6 +303,7 @@ namespace ChessLogic
         }
 
 
+
         public bool IsDraw(PieceColor color)
         {
             var tempHistory = moveHistory.Take(moveHistory.Count).ToList();

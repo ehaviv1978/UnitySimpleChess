@@ -23,9 +23,7 @@ namespace ChessLogic
         public ChessMove MakeMove()
         {
             int bestMoveScore = -999999;
-            int bestIndex = 99;
-            int bestIndex2 = 99;
-            var computerMove = new ChessMove(bestIndex, bestIndex2);
+            var computerMove = new ChessMove(-1, -1);
             piecesAI = game.blackPieces;
 
             foreach (var index in piecesAI.OrderBy(x => Guid.NewGuid()).ToArray()) 
@@ -40,15 +38,13 @@ namespace ChessLogic
                     var tempScore = BestMove(PieceColor.White, bestMoveScore, compLvl);
                     if (tempScore > bestMoveScore) {
                         bestMoveScore = tempScore;
-                        bestIndex = index;
-                        bestIndex2 = index2;
+                        computerMove.first = index;
+                        computerMove.last = index2;
+
                     }
                     game.MoveBack();
                 }
             }
-            if (bestIndex == 99) return computerMove;
-            computerMove.first = bestIndex;
-            computerMove.last = bestIndex2;
             return computerMove;
         }
 
@@ -77,8 +73,8 @@ namespace ChessLogic
                     case PieceType.Queen:
                         score += 1000;
                         break;
-                    case PieceType.King:
                     case PieceType.King0:
+                    case PieceType.King:
                         score += 10000;
                         break;
                 }
@@ -102,8 +98,8 @@ namespace ChessLogic
                     case PieceType.Queen:
                         score -= 1000;
                         break;
-                    case PieceType.King:
                     case PieceType.King0:
+                    case PieceType.King:
                         score -= 10000;
                         break;
                 }
@@ -130,7 +126,7 @@ namespace ChessLogic
                     var tempScore = (depth > 1) ? BestMove(oppositeColor, bestMoveScore, depth - 1) : BoardScore();
                     if (color == PieceColor.White) 
                     {
-                        if (tempScore <= score) 
+                        if (tempScore <= score)  //Alpha beta prouning
                         {
                             game.MoveBack();
                             return score;
@@ -142,7 +138,7 @@ namespace ChessLogic
                     } 
                     else
                     {
-                        if (tempScore >= score)
+                        if (tempScore >= score)  //Alpha beta prouning
                         {
                             game.MoveBack();
                             return score;
@@ -155,7 +151,18 @@ namespace ChessLogic
                     game.MoveBack();
                 }
             }
-            return bestMoveScore;
+            if (bestMoveScore == 99999 && depth == compLvl && !game.IsDoingCheck(PieceColor.Black)) //Computer try to avoid Draw move
+            {
+                return 0;
+            }
+            if (color == PieceColor.White)
+            {
+                return bestMoveScore + depth;
+            }
+            else
+            {
+                return bestMoveScore - depth;
+            }
         }
 
     }
