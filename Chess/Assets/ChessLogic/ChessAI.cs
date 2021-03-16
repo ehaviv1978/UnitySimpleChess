@@ -18,17 +18,15 @@ namespace ChessLogic
             compLvl = lvl;
         }
 
-        private List<int> piecesAI;
 
         public ChessMove MakeMove()
         {
             int bestMoveScore = -999999;
             var computerMove = new ChessMove(-1, -1);
-            piecesAI = game.blackPieces;
 
-            foreach (var index in piecesAI.OrderBy(x => Guid.NewGuid()).ToArray()) 
+            foreach (var index in game.blackPieces.OrderBy(x => Guid.NewGuid()).ToArray()) //randomize computer piece check order
             {
-                foreach (var index2 in game.PossibleMoves(index).OrderBy(x => Guid.NewGuid()).ToArray()) 
+                foreach (var index2 in game.PossibleMoves(index).OrderBy(x => Guid.NewGuid()).ToArray()) //randomize computer piece posible moves check order
                 {
                     game.MakeMove(index, index2);
                     if (game.IsDoingCheck(PieceColor.White)) {
@@ -40,7 +38,6 @@ namespace ChessLogic
                         bestMoveScore = tempScore;
                         computerMove.first = index;
                         computerMove.last = index2;
-
                     }
                     game.MoveBack();
                 }
@@ -80,8 +77,8 @@ namespace ChessLogic
                 }
             }
             foreach (var index in game.whitePieces.ToArray()) {
-            switch(game.board1d[index].pieceType)
-            {
+                switch(game.board1d[index].pieceType)
+                {
                     case PieceType.Pawn:
                         score -= 100;
                         break;
@@ -107,6 +104,8 @@ namespace ChessLogic
             return score;
         }
 
+
+        // MinMax AlphaBeta algorithm recursive function
         private int BestMove(PieceColor color, int score, int depth)
         {
             var oppositeColor = (color == PieceColor.White) ? PieceColor.Black : PieceColor.White;
@@ -123,7 +122,7 @@ namespace ChessLogic
                         game.MoveBack();
                         continue;
                     }
-                    var tempScore = (depth > 1) ? BestMove(oppositeColor, bestMoveScore, depth - 1) : BoardScore();
+                    var tempScore = (depth > 1) ? BestMove(oppositeColor, bestMoveScore, depth - 1) : BoardScore(); //recursive call
                     if (color == PieceColor.White) 
                     {
                         if (tempScore <= score)  //Alpha beta prouning
@@ -131,10 +130,8 @@ namespace ChessLogic
                             game.MoveBack();
                             return score;
                         }
-                        if (tempScore < bestMoveScore)
-                        {
-                            bestMoveScore = tempScore;
-                        }
+                        if (tempScore < bestMoveScore) bestMoveScore = tempScore; //MinMax assignment
+                        
                     } 
                     else
                     {
@@ -143,26 +140,15 @@ namespace ChessLogic
                             game.MoveBack();
                             return score;
                         }
-                        if (tempScore > bestMoveScore)
-                        {
-                            bestMoveScore = tempScore;
-                        }
+                        if (tempScore > bestMoveScore) bestMoveScore = tempScore; //MinMax assignment
                     }
                     game.MoveBack();
                 }
             }
-            if (bestMoveScore == 99999 && depth == compLvl && !game.IsDoingCheck(PieceColor.Black)) //Computer try to avoid Draw move
-            {
-                return 0;
-            }
-            if (color == PieceColor.White)
-            {
-                return bestMoveScore + depth;
-            }
-            else
-            {
-                return bestMoveScore - depth;
-            }
+
+            if (bestMoveScore == 99999 && depth == compLvl && !game.IsDoingCheck(PieceColor.Black)) return 0;//Computer try to avoid Draw move
+
+            return bestMoveScore; //Return MinMax value
         }
 
     }

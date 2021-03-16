@@ -82,19 +82,12 @@ public class GameLogic : MonoBehaviour
     }
 
 
-    void DisableAllButtons()
-    {
-        foreach(var button in allButtons)
-        {
-            button.interactable = false;
-        }
-    }
-
-    void EnableAllButtons()
+    // Disable or Enable all buttons in game
+    void EnableAllButtons(bool isEnabled)
     {
         foreach (var button in allButtons)
         {
-            button.interactable = true;
+            button.interactable = isEnabled;
         }
     }
 
@@ -112,7 +105,7 @@ public class GameLogic : MonoBehaviour
 
         Game.NewBoard();
         DrawBoard();
-        EnableleBoard();
+        BoardEnabled(true);
 
         GameInfo.text = "White move first";
     }
@@ -231,21 +224,9 @@ public class GameLogic : MonoBehaviour
 
         if (HandPiece.Shape.sprite==Empty)
         {
-            if (button.Shape.sprite == Empty || Game.board1d[button.index].pieceColor!=Game.turnColor)
-            {
-                return;
-            }
-            else
-            {
-                if (!Game.IsDoingCheck(Game.OtherColor(Game.turnColor)))
-                {
-                    foreach (var but in VisualBoard)
-                    {
-                        but.Button.image.color = Color.clear;
-                    }
-                }
-                PickPieceInHand();
-            }
+            if (Game.board1d[button.index].pieceColor == PieceColor.Black && vsComputer) return;  //Don't allow to play black pieces if computer playing
+            if (button.Shape.sprite == Empty || Game.board1d[button.index].pieceColor != Game.turnColor) return;  //Don't allow to pick up oponent pieces
+            PickPieceInHand();
         }
         else
         {
@@ -257,7 +238,7 @@ public class GameLogic : MonoBehaviour
                 ColorCheck();
                 return;
             }
-            else if (Game.board1d[button.index].pieceColor == Game.board1d[HandPiece.tempIndex].pieceColor)
+            if (Game.board1d[button.index].pieceColor == Game.board1d[HandPiece.tempIndex].pieceColor)
             {
                 if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.pieceMove);
                 ClearHandPiece();
@@ -266,7 +247,7 @@ public class GameLogic : MonoBehaviour
                 ColorCheck();
                 return;
             }
-            else if (Array.Exists(possibleMoves, element => element == button.index))
+            if (Array.Exists(possibleMoves, element => element == button.index)) //if clicked squre is in possible moves
             {
                 Game.MakeMove(HandPiece.tempIndex, button.index);
                 if (Game.IsDoingCheck(Game.turnColor))
@@ -288,54 +269,41 @@ public class GameLogic : MonoBehaviour
                     DrawBoard();
                     if (Game.IsDoingCheckmate(Game.OtherColor(Game.turnColor)))
                     {
-                        DisableBoard();
+                        BoardEnabled(false);
                         if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.win);
                         GameInfo.text = "Checkmate!!! " + Game.OtherColor(Game.turnColor) + " Won!!";
                         return;
                     }
                     if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.check);
                     GameInfo.text = Game.turnColor + " under Check.";
-                    if (vsComputer && Game.turnColor == PieceColor.Black)
-                    {
-                        StartCoroutine(ComputerTurn());
-                    }
+                    if (vsComputer && Game.turnColor == PieceColor.Black) StartCoroutine(ComputerTurn());  // if computer playing make computer move
+                    
                     return;
                 }
-                else if (Game.IsDraw(Game.turnColor))
+                if (Game.IsDraw(Game.turnColor))
                 {
                     Draw();
                     return;
                 }
                 DrawBoard();
                 ClearHandPiece();
-                if (vsComputer && Game.turnColor== PieceColor.Black)
-                {
-                    StartCoroutine(ComputerTurn());
-                }
+                if (vsComputer && Game.turnColor == PieceColor.Black) StartCoroutine(ComputerTurn());  // if computer playing make computer move
+                return;
             }
-            else if (!Array.Exists(possibleMoves, element => element == button.index))
-            {
-                if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.error);
-                GameInfo.text = "Invalid Move.";
-            }
+            // if clicked squre is not in posible move
+            if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.error);
+            GameInfo.text = "Invalid Move.";
         }
     }
 
 
-    void DisableBoard()
-    {
-        foreach(var button in VisualBoard)
-        {
-            button.Button.interactable = false;
-        }
-    }
 
-
-    void EnableleBoard()
+    //Disable or Enable all chess Board Squares/buttons
+    void BoardEnabled(bool isEnabled)
     {
         foreach (var button in VisualBoard)
         {
-            button.Button.interactable = true;
+            button.Button.interactable = isEnabled;
         }
     }
 
@@ -343,7 +311,7 @@ public class GameLogic : MonoBehaviour
     IEnumerator ComputerTurn()
     {
         bool computerCapture = false;
-        DisableAllButtons();
+        EnableAllButtons(false);
         GameInfo.text = "Computer thinking...";
         ChessMove computerMove = new ChessMove();
         var thread = new Thread(() => {
@@ -389,12 +357,13 @@ public class GameLogic : MonoBehaviour
     }
 
 
+    // If game end in draw
     private void Draw()
     {
         ClearHandPiece();
         DrawBoard();
         ColorCheck();
-        DisableBoard();
+        BoardEnabled(false);
         if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.lose);
         GameInfo.text = "Draw!";
     }
@@ -405,13 +374,13 @@ public class GameLogic : MonoBehaviour
         if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.pieceMove);
         DrawBoard();
         ClearHandPiece();
-        EnableAllButtons();
+        EnableAllButtons(true);
         if (Game.IsDoingCheck(PieceColor.Black))
         {
             if (Game.IsDoingCheckmate(PieceColor.Black))
             {
                 ColorCheck();
-                DisableBoard();
+                BoardEnabled(false);
                 if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.lose);
                 GameInfo.text = "Checkmate!!! Computer Won!";
                 return;
@@ -482,7 +451,7 @@ public class GameLogic : MonoBehaviour
         if (Game.moveHistoryPointer == 0) return;
 
         if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.softClick);
-        EnableleBoard();
+        BoardEnabled(true);
         Game.MoveBack();
         DrawBoard();
         foreach (var but in VisualBoard)
@@ -494,7 +463,7 @@ public class GameLogic : MonoBehaviour
         {
             if (Game.IsDoingCheckmate(Game.OtherColor(Game.turnColor)))
             {
-                DisableBoard();
+                BoardEnabled(false);
                 GameInfo.text = "Checkmate!!! " + Game.OtherColor(Game.turnColor) + " Won!!";
                 return;
             }
@@ -522,7 +491,7 @@ public class GameLogic : MonoBehaviour
         {
             if (Game.IsDoingCheckmate(Game.OtherColor(Game.turnColor)))
             {
-                DisableBoard();
+                BoardEnabled(false);
                 GameInfo.text = "Checkmate!!! " + Game.OtherColor(Game.turnColor) + " Won!!";
                 return;
             }
@@ -546,7 +515,7 @@ public class GameLogic : MonoBehaviour
         }
     }
 
-    public void ComputerPlay()
+    public void ButtonPlay()
     {
         if (vsComputer && Game.turnColor == PieceColor.Black && VisualBoard[0].Button.interactable)
         {
@@ -559,8 +528,8 @@ public class GameLogic : MonoBehaviour
     {
         if (computerLvl < maxComputerLvl)
         {
-            if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.softClick);
             computerLvl++;
+            if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.softClick);
             AI.compLvl = computerLvl;
             TextComputerLvl.text = AI.compLvl.ToString();
         }
@@ -570,8 +539,8 @@ public class GameLogic : MonoBehaviour
     {
         if (computerLvl > 1)
         {
-            if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.softClick);
             computerLvl--;
+            if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.softClick);
             AI.compLvl = computerLvl;
             TextComputerLvl.text = AI.compLvl.ToString();
         }
