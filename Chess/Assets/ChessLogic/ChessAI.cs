@@ -33,7 +33,8 @@ namespace ChessLogic
                         game.MoveBack();
                         continue;
                     }
-                    var tempScore = BestMove(PieceColor.White, bestMoveScore, compLvl);
+                    var tempScore = BestMove(PieceColor.White, bestMoveScore, compLvl);  //Call recursive MinMax funciton
+                    //var tempScore = BoardScore();
                     if (tempScore > bestMoveScore) {
                         bestMoveScore = tempScore;
                         computerMove.first = index;

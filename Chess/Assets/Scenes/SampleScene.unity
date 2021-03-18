@@ -524,7 +524,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Audio: {fileID: 136067694}
   click: {fileID: 8300000, guid: 3e1a07e1ca7a5ef4cb0546b2e3c4845f, type: 3}
-  softClick: {fileID: 8300000, guid: 0781206c66adfdd49a9adcc16e473dd7, type: 3}
+  softClick: {fileID: 8300000, guid: 1900d0a0bf6bfcd4fbeae02681f0c439, type: 3}
   pieceMove: {fileID: 8300000, guid: 1ecbee86ee207674da28df16f57c4c03, type: 3}
   win: {fileID: 8300000, guid: 686aa8bd878012e49b018a4181c3a073, type: 3}
   lose: {fileID: 8300000, guid: b10fdc675049e3c46889ca697d25bd3a, type: 3}

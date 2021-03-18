@@ -10,6 +10,8 @@ namespace ChessLogic
         public ChessSquare[] board1d = new ChessSquare[64];
         ChessSquare[,] board2d = new ChessSquare[8, 8];
 
+        
+    
         public List<ChessSquare[]> moveHistory = new List<ChessSquare[]>();
         public int moveHistoryPointer = 0;
         public PieceColor turnColor = PieceColor.White;
@@ -125,7 +127,7 @@ namespace ChessLogic
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    board2d[i, j] = board1d[n];
+                    board2d[i, j] =  board1d[n];
                     n++;
                 }
             }
@@ -527,70 +529,62 @@ namespace ChessLogic
             //Check Knight posible moves
             if (board1d[index].pieceType == PieceType.Knight)
             {
-                try
+                if (rowOld - 2 > -1 && columnOld - 1 > -1)
                 {
                     if (board2d[rowOld - 2,columnOld - 1].pieceColor != color)
                     {
                         possibleMoves.Add(index - 17);
                     }
                 }
-                catch (IndexOutOfRangeException) { }
-                try
+                if (rowOld - 2 > -1 && columnOld + 1 < 8)
                 {
                     if (board2d[rowOld - 2,columnOld + 1].pieceColor != color)
                     {
                         possibleMoves.Add(index - 15);
                     }
                 }
-                catch (IndexOutOfRangeException) { }
-                try
+                if (rowOld - 1 > -1 && columnOld - 2 > -1)
                 {
                     if (board2d[rowOld - 1, columnOld - 2].pieceColor != color)
                     {
                         possibleMoves.Add(index - 10);
                     }
                 }
-                catch (IndexOutOfRangeException) { }
-                try
+                if (rowOld - 1 > -1 && columnOld + 2 < 8)
                 {
                     if (board2d[rowOld - 1, columnOld + 2].pieceColor != color)
                     {
                         possibleMoves.Add(index - 6);
                     }
                 }
-                catch (IndexOutOfRangeException) { }
-                try
+                if (rowOld + 1 < 8 && columnOld - 2 > -1)
                 {
                     if (board2d[rowOld + 1, columnOld - 2].pieceColor != color)
                     {
                         possibleMoves.Add(index + 6);
                     }
                 }
-                catch (IndexOutOfRangeException) { }
-                try
+                if (rowOld + 1 < 8 && columnOld + 2 < 8)
                 {
                     if (board2d[rowOld + 1, columnOld + 2].pieceColor != color)
                     {
                         possibleMoves.Add(index + 10);
                     }
                 }
-                catch (IndexOutOfRangeException) { }
-                try
+                if (rowOld + 2 < 8 && columnOld - 1 > -1)
                 {
                     if (board2d[rowOld + 2, columnOld - 1].pieceColor != color)
                     {
                         possibleMoves.Add(index + 15);
                     }
                 }
-                catch (IndexOutOfRangeException) { }
-                try
+                if (rowOld + 2 < 8 && columnOld + 1 < 8)
                 {
                     if (board2d[rowOld + 2, columnOld + 1].pieceColor != color)
                     {
                         possibleMoves.Add(index + 17);
                     }
                 }
-                catch (IndexOutOfRangeException) { }
             }
 
             //Check King posible moves
@@ -728,15 +722,14 @@ namespace ChessLogic
                 {
                     possibleMoves.Add(index + num * 16);
                 }
-                try
+                if (rowOld + num > -1 && rowOld + num <8)
                 {
                     if (board2d[rowOld + num,columnOld].pieceColor == PieceColor.Non)
                     {
                         possibleMoves.Add(index + num * 8);
                     }
                 }
-                catch (IndexOutOfRangeException) { }
-                try
+                if (rowOld + num > -1 && rowOld + num < 8 && columnOld + 1 < 8)
                 {
                     if (board2d[rowOld + num,columnOld + 1].pieceColor == oppositeColor ||
                         (board2d[rowOld + num,columnOld + 1].enPassant))
@@ -745,8 +738,7 @@ namespace ChessLogic
                         possibleMoves.Add(index + num * 8 + 1);
                     }
                 }
-                catch (IndexOutOfRangeException) { }
-                try
+                if (rowOld + num > -1 && rowOld + num < 8 && columnOld - 1 > -1)
                 {
                     if (board2d[rowOld + num,columnOld - 1].pieceColor == oppositeColor ||
                         (board2d[rowOld + num,columnOld - 1].enPassant))
@@ -754,7 +746,6 @@ namespace ChessLogic
                         possibleMoves.Add(index + num * 8 - 1);
                     }
                 }
-                catch (IndexOutOfRangeException) { }
             }
 
             //Calculate Rock possible moves
