@@ -51,8 +51,8 @@ public class GameLogic : MonoBehaviour
     private ChessAI AI;
     private int[] possibleMoves;
     private bool vsComputer = true;
-    public int computerLvl = 3;
-    public int maxComputerLvl = 4;
+    public int computerLvl = 2;
+    public int maxComputerLvl = 2;
     Button[] allButtons;
     private Vector3 oldPosition;
     private Vector3 newPosition;
@@ -276,7 +276,7 @@ public class GameLogic : MonoBehaviour
                     }
                     if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.check);
                     GameInfo.text = Game.turnColor + " under Check.";
-                    if (vsComputer && Game.turnColor == PieceColor.Black) ComputerTurn();//StartCoroutine(ComputerTurn());  // if computer playing make computer move
+                    if (vsComputer && Game.turnColor == PieceColor.Black) ComputerTurn();// StartCoroutine(ComputerTurn());  // if computer playing make computer move
 
 
                     return;
@@ -320,58 +320,26 @@ public class GameLogic : MonoBehaviour
     }
 
 
-    /*    IEnumerator ComputerTurn()
-        {
-            bool computerCapture = false;
-            EnableAllButtons(false);
-            GameInfo.text = "Computer thinking...";
-            ChessMove computerMove = new ChessMove();
-            var thread = new Thread(() => {
-                computerMove = AI.MakeMove();
-                if (Game.board1d[computerMove.last].pieceColor != PieceColor.Non)
-                {
-                    computerCapture = true;
-                }
-                Game.MakeMove(computerMove.first, computerMove.last);
-            });
-            thread.Start();
-            while (thread.IsAlive)
-            {
-                yield return null;
-            }
-            if (computerCapture)
-            {
-                VisualBoard[computerMove.last].Button.image.color = Color.red;
-            }
-            oldPosition = new Vector3(((computerMove.first % 8) - 4) * 80 + 40, -(((computerMove.first / 8) - 4) * 80 + 40), 0);
-            newPosition = new Vector3(((computerMove.last % 8) - 4) * 80 + 40, -(((computerMove.last / 8) - 4) * 80 + 40), 0);
-            ChessPieceAnimation.transform.localPosition = oldPosition;
-            ChessPieceAnimation.sprite = VisualBoard[computerMove.first].Shape.sprite;
-            VisualBoard[computerMove.first].Shape.sprite = Empty;
-            ChessPieceAnimation.enabled = true;
-            animating = true;
-        }
-    */
-
-    void ComputerTurn()
+    /*IEnumerator ComputerTurn()
     {
         bool computerCapture = false;
         EnableAllButtons(false);
         GameInfo.text = "Computer thinking...";
         ChessMove computerMove = new ChessMove();
-        //var thread = new Thread(() => {
+        var thread = new Thread(() =>
+        {
             computerMove = AI.MakeMove();
             if (Game.board1d[computerMove.last].pieceColor != PieceColor.Non)
             {
                 computerCapture = true;
             }
             Game.MakeMove(computerMove.first, computerMove.last);
-        //});
-       // thread.Start();
-        //while (thread.IsAlive)
-        //{
-        //    yield return null;
-        //}
+        });
+        thread.Start();
+        while (thread.IsAlive)
+        {
+            yield return null;
+        }
         if (computerCapture)
         {
             VisualBoard[computerMove.last].Button.image.color = Color.red;
@@ -383,8 +351,29 @@ public class GameLogic : MonoBehaviour
         VisualBoard[computerMove.first].Shape.sprite = Empty;
         ChessPieceAnimation.enabled = true;
         animating = true;
-        //CompliteComputerMove();
+    }*/
+
+
+    void ComputerTurn()
+    {
+        EnableAllButtons(false);
+        GameInfo.text = "Computer thinking...";
+        var computerMove = AI.MakeMove();
+        if (Game.board1d[computerMove.last].pieceColor != PieceColor.Non)
+        {
+            VisualBoard[computerMove.last].Button.image.color = Color.red;
+        }
+        Game.MakeMove(computerMove.first, computerMove.last);
+        oldPosition = new Vector3(((computerMove.first % 8) - 4) * 80 + 40, -(((computerMove.first / 8) - 4) * 80 + 40), 0);
+        newPosition = new Vector3(((computerMove.last % 8) - 4) * 80 + 40, -(((computerMove.last / 8) - 4) * 80 + 40), 0);
+        ChessPieceAnimation.transform.localPosition = oldPosition;
+        ChessPieceAnimation.sprite = VisualBoard[computerMove.first].Shape.sprite;
+        VisualBoard[computerMove.first].Shape.sprite = Empty;
+        ChessPieceAnimation.enabled = true;
+        animating = true;
     }
+
+
 
     private void Update()
     {
@@ -545,7 +534,8 @@ public class GameLogic : MonoBehaviour
         
         if(vsComputer && Game.turnColor == PieceColor.Black && VisualBoard[0].Button.interactable)
         {
-            ComputerTurn();//StartCoroutine(ComputerTurn());
+            ComputerTurn();
+            //StartCoroutine(ComputerTurn());
         }
     }
 
@@ -554,7 +544,8 @@ public class GameLogic : MonoBehaviour
         if (vsComputer && Game.turnColor == PieceColor.Black && VisualBoard[0].Button.interactable)
         {
             if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.softClick);
-            ComputerTurn();//StartCoroutine(ComputerTurn());
+            ComputerTurn();
+            //StartCoroutine(ComputerTurn());
         }
     }
 
@@ -589,6 +580,7 @@ public class GameLogic : MonoBehaviour
             var gameToSave = new SavedChessGame(Game.turnColor, Game.moveHistory);
             string json = JsonConvert.SerializeObject(gameToSave, Formatting.Indented);
             File.WriteAllText(Application.persistentDataPath + "/saved_game.json", json);
+            GameInfo.text = "Game Saved.";
         }
         catch
         {
@@ -605,7 +597,7 @@ public class GameLogic : MonoBehaviour
         {
             string json = File.ReadAllText(Application.persistentDataPath + "/saved_game.json");
             gameSaved = JsonConvert.DeserializeObject<SavedChessGame>(json);
-            GameInfo.text = json; 
+            GameInfo.text = json;
         }
         catch
         {
@@ -622,7 +614,11 @@ public class GameLogic : MonoBehaviour
         ColorCheck();
         if (gameSaved.turn == PieceColor.Black && vsComputer)
         {
-            GameInfo.text = "Press play for computer to move.";
+            GameInfo.text = "Game Loaded. Press play for computer to move.";
+        }
+        else
+        {
+            GameInfo.text = "Game Loaded.";
         }
     }
 

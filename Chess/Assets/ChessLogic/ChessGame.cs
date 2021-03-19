@@ -160,7 +160,6 @@ namespace ChessLogic
 
         public void MakeMove(int first, int second)
         {
-            SwitchTurnColor();
             if (board1d[first].pieceType == PieceType.Pawn && board1d[second].enPassant)
             {
                 if (second < first)
@@ -193,13 +192,11 @@ namespace ChessLogic
                 if (second == first + 2)
                 {
                     MakeMove(second + 1, second - 1);
-                    SwitchTurnColor();
                     return;
                 }
                 else if (second == first - 2)
                 {
                     MakeMove(second - 2, second + 1);
-                    SwitchTurnColor();
                     return;
                 }
             }
@@ -219,8 +216,10 @@ namespace ChessLogic
             }
             if (moveHistory.Count > moveHistoryPointer + 1)
             {
-                moveHistory = moveHistory.Take(moveHistoryPointer + 1).ToList();
+                //moveHistory = moveHistory.Take(moveHistoryPointer + 1).ToList();
+                moveHistory.RemoveRange(moveHistoryPointer + 1, moveHistory.Count - moveHistoryPointer - 1);
             }
+            SwitchTurnColor();
             AddMoveToHistory();
             FillPiecesArrays();
         }
@@ -256,7 +255,6 @@ namespace ChessLogic
                 board1d[i].pieceType = moveHistory[moveHistoryPointer][i].pieceType;
                 board1d[i].enPassant = moveHistory[moveHistoryPointer][i].enPassant;
             }
-            Board1dToBoard2d();
             FillPiecesArrays();
         }
 
