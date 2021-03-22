@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-
 namespace ChessLogic
 {
     class ChessGame
@@ -10,8 +9,6 @@ namespace ChessLogic
         public ChessSquare[] board1d = new ChessSquare[64];
         ChessSquare[,] board2d = new ChessSquare[8, 8];
 
-        
-    
         public List<ChessSquare[]> moveHistory = new List<ChessSquare[]>();
         public int moveHistoryPointer = 0;
         public PieceColor turnColor = PieceColor.White;
@@ -216,8 +213,8 @@ namespace ChessLogic
             }
             if (moveHistory.Count > moveHistoryPointer + 1)
             {
+                moveHistory.RemoveRange(moveHistoryPointer +1 , moveHistory.Count - moveHistoryPointer - 1);
                 //moveHistory = moveHistory.Take(moveHistoryPointer + 1).ToList();
-                moveHistory.RemoveRange(moveHistoryPointer + 1, moveHistory.Count - moveHistoryPointer - 1);
             }
             SwitchTurnColor();
             AddMoveToHistory();
@@ -294,7 +291,7 @@ namespace ChessLogic
 
         public bool IsDoingCheckmate(PieceColor color)
         {
-            var tempHistory = moveHistory.Take(moveHistory.Count).ToList();
+            var tempHistory = moveHistory.ToList();
             var pieces = (color == PieceColor.Black) ? whitePieces : blackPieces;
 
             foreach (int piece in pieces.Take(pieces.Count).ToArray())
@@ -305,13 +302,13 @@ namespace ChessLogic
                     if (!IsDoingCheck(color))
                     {
                         MoveBack();
-                        moveHistory = tempHistory.Take(tempHistory.Count).ToList();
+                        moveHistory = tempHistory.ToList();
                         return false;
                     }
                     MoveBack();
                 }
             }
-            moveHistory = tempHistory.Take(tempHistory.Count).ToList();
+            moveHistory = tempHistory.ToList();
             return true;
         }
 

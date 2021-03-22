@@ -7,13 +7,11 @@ namespace ChessLogic
     class ChessAI
     {
         ChessGame game;
-        PieceColor colorAI;
         public int compLvl;
 
-        public ChessAI(ChessGame game, PieceColor color, int lvl)
+        public ChessAI(ChessGame game, int lvl)
         {
             this.game = game;
-            colorAI = color;
             compLvl = lvl;
         }
 
@@ -114,8 +112,10 @@ namespace ChessLogic
 
             foreach (var index in pieces) 
             {
-                foreach (var index2 in game.PossibleMoves(index)) 
+                foreach (var index2 in game.PossibleMoves(index))
+                //for (int index2 = 0; index2 < 64; index2++)
                 {
+                    //if (!game.IsValidMove(index, index2)) continue;
                     game.MakeMove(index, index2);
                     if (game.IsDoingCheck(oppositeColor)) 
                     {

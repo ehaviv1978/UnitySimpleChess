@@ -62,7 +62,7 @@ public class GameLogic : MonoBehaviour
 
     void Start()
     {
-        AI = new ChessAI(Game, PieceColor.Black, computerLvl);
+        AI = new ChessAI(Game, computerLvl);
         for (int i = 0; i < 64; i++)
         {     
             var chessButton = Instantiate(chessButtonPrefub);
