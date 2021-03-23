@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
@@ -281,11 +282,14 @@ public class GameLogic : MonoBehaviour
 
                     return;
                 }
+                var tempHistory = Game.moveHistory.ToList();
                 if (Game.IsDraw(Game.turnColor))
                 {
+                    Game.moveHistory = tempHistory.ToList();
                     Draw();
                     return;
                 }
+                Game.moveHistory = tempHistory.ToList();
                 DrawBoard();
                 ClearHandPiece();
                 if (vsComputer && Game.turnColor == PieceColor.Black) ComputerTurn();//StartCoroutine(ComputerTurn());  // if computer playing make computer move
@@ -394,6 +398,7 @@ public class GameLogic : MonoBehaviour
 
     void CompliteComputerMove()
     {
+        var tempHistory = Game.moveHistory.ToList();
         if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.pieceMove);
         DrawBoard();
         ClearHandPiece();
@@ -414,8 +419,10 @@ public class GameLogic : MonoBehaviour
         }
         else if (Game.IsDraw(PieceColor.White))
         {
+            Game.moveHistory = tempHistory.ToList();
             Draw();
         }
+        Game.moveHistory = tempHistory.ToList();
     }
 
     void ClearHandPiece()

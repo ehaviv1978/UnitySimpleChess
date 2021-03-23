@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace ChessLogic
 {
@@ -214,7 +215,6 @@ namespace ChessLogic
             if (moveHistory.Count > moveHistoryPointer + 1)
             {
                 moveHistory.RemoveRange(moveHistoryPointer +1 , moveHistory.Count - moveHistoryPointer - 1);
-                //moveHistory = moveHistory.Take(moveHistoryPointer + 1).ToList();
             }
             SwitchTurnColor();
             AddMoveToHistory();
@@ -272,7 +272,6 @@ namespace ChessLogic
         }
 
 
-
         public bool IsDoingCheck(PieceColor color)
         {
             var tempPieces = (color == PieceColor.Black) ? whitePieces : blackPieces;
@@ -288,10 +287,8 @@ namespace ChessLogic
         }
 
 
-
         public bool IsDoingCheckmate(PieceColor color)
         {
-            var tempHistory = moveHistory.ToList();
             var pieces = (color == PieceColor.Black) ? whitePieces : blackPieces;
 
             foreach (int piece in pieces.Take(pieces.Count).ToArray())
@@ -302,13 +299,11 @@ namespace ChessLogic
                     if (!IsDoingCheck(color))
                     {
                         MoveBack();
-                        moveHistory = tempHistory.ToList();
                         return false;
                     }
                     MoveBack();
                 }
             }
-            moveHistory = tempHistory.ToList();
             return true;
         }
 
@@ -317,7 +312,6 @@ namespace ChessLogic
         {
             return IsDoingCheckmate(OtherColor(color));
         }
-
 
 
         //return a list of legal moves for a given piece
