@@ -291,7 +291,7 @@ namespace ChessLogic
         {
             var pieces = (color == PieceColor.Black) ? whitePieces : blackPieces;
 
-            foreach (int piece in pieces.Take(pieces.Count).ToArray())
+            foreach (int piece in pieces.ToArray())
             {
                 foreach (int move in PossibleMoves(piece))
                 {

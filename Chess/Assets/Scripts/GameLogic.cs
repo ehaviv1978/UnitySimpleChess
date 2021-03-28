@@ -277,7 +277,7 @@ public class GameLogic : MonoBehaviour
                     }
                     if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.check);
                     GameInfo.text = Game.turnColor + " under Check.";
-                    if (vsComputer && Game.turnColor == PieceColor.Black) ComputerTurn();// StartCoroutine(ComputerTurn());  // if computer playing make computer move
+                    if (vsComputer && Game.turnColor == PieceColor.Black) StartCoroutine(ComputerTurn());  // if computer playing make computer move
 
 
                     return;
@@ -292,7 +292,7 @@ public class GameLogic : MonoBehaviour
                 Game.moveHistory = tempHistory.ToList();
                 DrawBoard();
                 ClearHandPiece();
-                if (vsComputer && Game.turnColor == PieceColor.Black) ComputerTurn();//StartCoroutine(ComputerTurn());  // if computer playing make computer move
+                if (vsComputer && Game.turnColor == PieceColor.Black) StartCoroutine(ComputerTurn());  // if computer playing make computer move
                 return;
             }
             // if clicked squre is not in posible move
@@ -324,7 +324,7 @@ public class GameLogic : MonoBehaviour
     }
 
 
-    /*IEnumerator ComputerTurn()
+    IEnumerator ComputerTurn()
     {
         bool computerCapture = false;
         EnableAllButtons(false);
@@ -355,10 +355,10 @@ public class GameLogic : MonoBehaviour
         VisualBoard[computerMove.first].Shape.sprite = Empty;
         ChessPieceAnimation.enabled = true;
         animating = true;
-    }*/
+    }
 
 
-    void ComputerTurn()
+/*    void ComputerTurn()
     {
         EnableAllButtons(false);
         GameInfo.text = "Computer thinking...";
@@ -376,7 +376,7 @@ public class GameLogic : MonoBehaviour
         ChessPieceAnimation.enabled = true;
         animating = true;
     }
-
+*/
 
 
     private void Update()
@@ -541,8 +541,8 @@ public class GameLogic : MonoBehaviour
         
         if(vsComputer && Game.turnColor == PieceColor.Black && VisualBoard[0].Button.interactable)
         {
-            ComputerTurn();
-            //StartCoroutine(ComputerTurn());
+            //ComputerTurn();
+            StartCoroutine(ComputerTurn());
         }
     }
 
@@ -551,8 +551,8 @@ public class GameLogic : MonoBehaviour
         if (vsComputer && Game.turnColor == PieceColor.Black && VisualBoard[0].Button.interactable)
         {
             if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.softClick);
-            ComputerTurn();
-            //StartCoroutine(ComputerTurn());
+            //ComputerTurn();
+            StartCoroutine(ComputerTurn());
         }
     }
 

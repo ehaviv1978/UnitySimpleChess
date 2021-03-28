@@ -2687,8 +2687,8 @@ MonoBehaviour:
   AnimationPlane: {fileID: 337682614}
   ChessPieceAnimation: {fileID: 625829693}
   TextSoundButton: {fileID: 1309189785}
-  computerLvl: 2
-  maxComputerLvl: 2
+  computerLvl: 3
+  maxComputerLvl: 5
 --- !u!4 &2041544640
 Transform:
   m_ObjectHideFlags: 0
