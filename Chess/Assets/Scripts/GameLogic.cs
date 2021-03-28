@@ -6,6 +6,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -277,7 +278,7 @@ public class GameLogic : MonoBehaviour
                     }
                     if (playSounds) SoundManager.SoundInstance.Audio.PlayOneShot(SoundManager.SoundInstance.check);
                     GameInfo.text = Game.turnColor + " under Check.";
-                    if (vsComputer && Game.turnColor == PieceColor.Black) ComputerTurn();// StartCoroutine(ComputerTurn());  // if computer playing make computer move
+                    if (vsComputer && Game.turnColor == PieceColor.Black) ComputerTurn();//StartCoroutine(ComputerTurn());  // if computer playing make computer move
 
 
                     return;
@@ -292,7 +293,7 @@ public class GameLogic : MonoBehaviour
                 Game.moveHistory = tempHistory.ToList();
                 DrawBoard();
                 ClearHandPiece();
-                if (vsComputer && Game.turnColor == PieceColor.Black) ComputerTurn();//StartCoroutine(ComputerTurn());  // if computer playing make computer move
+                if (vsComputer && Game.turnColor == PieceColor.Black) ComputerTurn();// StartCoroutine(ComputerTurn());  // if computer playing make computer move
                 return;
             }
             // if clicked squre is not in posible move
@@ -358,15 +359,19 @@ public class GameLogic : MonoBehaviour
     }*/
 
 
-    void ComputerTurn()
+    async void ComputerTurn()
     {
         EnableAllButtons(false);
         GameInfo.text = "Computer thinking...";
-        var computerMove = AI.MakeMove();
-        if (Game.board1d[computerMove.last].pieceColor != PieceColor.Non)
+        ChessMove computerMove = new ChessMove();
+        await Task.Run(() =>
         {
-            VisualBoard[computerMove.last].Button.image.color = Color.red;
-        }
+            computerMove = AI.MakeMove();
+            if (Game.board1d[computerMove.last].pieceColor != PieceColor.Non)
+            {
+                VisualBoard[computerMove.last].Button.image.color = Color.red;
+            }
+        });
         Game.MakeMove(computerMove.first, computerMove.last);
         oldPosition = new Vector3(((computerMove.first % 8) - 4) * 80 + 40, -(((computerMove.first / 8) - 4) * 80 + 40), 0);
         newPosition = new Vector3(((computerMove.last % 8) - 4) * 80 + 40, -(((computerMove.last / 8) - 4) * 80 + 40), 0);
